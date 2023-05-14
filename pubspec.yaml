@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  internet_connection_checker: ^1.0.0+1
+  
 
 dev_dependencies:
   flutter_test:
