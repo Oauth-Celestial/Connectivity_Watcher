@@ -1,16 +1,52 @@
-# example
 
-A new Flutter project.
+## Example
 
-## Getting Started
+```dart
+import 'package:connectivity_watcher/NetworkService/Connectivity_Watcher.dart';
+import 'package:example/NoInternet.dart';
+import 'package:flutter/material.dart';
 
-This project is a starting point for a Flutter application.
+void main() {
+  runApp(const MyApp());
+}
 
-A few resources to get you started if this is your first Flutter project:
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        navigatorKey: ConnectivityWatcher.contextKey,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: RedScreen());
+  }
+}
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+class RedScreen extends StatefulWidget {
+  const RedScreen({super.key});
+
+  @override
+  State<RedScreen> createState() => _RedScreenState();
+}
+
+class _RedScreenState extends State<RedScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    ConnectivityWatcher.shared.setup(widgetForNoInternet: CustomNoInternet());
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.red,
+    );
+  }
+}
+
+```

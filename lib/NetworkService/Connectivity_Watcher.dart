@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:network_check/NetworkService/NoInternet.dart';
 
-class NetworkCheck {
+class ConnectivityWatcher {
   static final GlobalKey<NavigatorState> contextKey =
       GlobalKey<NavigatorState>();
-  static NetworkCheck shared = NetworkCheck();
+  static ConnectivityWatcher shared = ConnectivityWatcher();
   OverlayEntry? entry;
+  List<OverlayEntry> entries = [];
   OverlayState? overlayState;
   Widget? noInternetWidget;
+
+  /// used to setup the connectivity listener and custom internet widget
 
   setup({Widget? widgetForNoInternet}) async {
     noInternetWidget = widgetForNoInternet;
@@ -17,7 +19,9 @@ class NetworkCheck {
       overlayState = (contextKey.currentState!.overlay);
       switch (status) {
         case InternetConnectionStatus.connected:
-          removeNoInternet();
+          try {
+            removeNoInternet();
+          } catch (e) {}
           print('You are Connected to the internet.');
           break;
         case InternetConnectionStatus.disconnected:
@@ -28,26 +32,27 @@ class NetworkCheck {
     });
   }
 
+  /// Checks if the internet connect is back and removes the no internet widget
+
   isConnectedtoNetwork() async {
     bool isconnected = await InternetConnectionChecker().hasConnection;
     if (isconnected) {
       removeNoInternet();
-    }
+    } else {}
   }
 
+  /// Removes the No internet widget from the tree
   removeNoInternet() {
-    entry?.remove();
-    entry = null;
-    overlayState = null;
+    entries.forEach((entry) => entry.remove());
+    entries.clear();
   }
 
+  /// Responsible for getting the current context from the tree and draw the  custom widget
   showNoInternet() {
-    BuildContext? insertcontext;
     entry = OverlayEntry(builder: (context) {
-      insertcontext = context;
-      return noInternetWidget ?? NoInternet();
+      return noInternetWidget ?? Container();
     });
-
+    entries.add(entry!);
     overlayState?.insert(entry!);
   }
 }

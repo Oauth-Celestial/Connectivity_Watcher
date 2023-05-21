@@ -1,39 +1,63 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+## Connectivity_Watcher
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+This plugin allows Flutter apps to discover network connectivity changes throught the app with your own custom no internet widget.
+
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+1. Get Reactive Network state throught the app
+
+2. Want to add your own custom widget for no internet no issue now.
+
+
 
 ## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+First, add connectivity_watcher as a dependency in your pubspec.yaml file
+```dart
+connectivity_watcher: 0.0.1
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+Step 1
 
+Add ConnectivityWatcher.contextKey as navigatorKey in your material app
 ```dart
-const like = 'sample';
+MaterialApp(
+        navigatorKey: ConnectivityWatcher.contextKey,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: RedScreen());
 ```
 
-## Additional information
+Step 2 
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+Add ConnectivityWatcher.shared.setup in init state of the widget 
+
+Note :
+Add setup code in the widget after the material app initialization as the key is not available at same level 
+
+```
+  void initState() {
+    // TODO: implement initState
+    ConnectivityWatcher.shared.setup(widgetForNoInternet: #your custom no internet widget);
+    super.initState();
+  }
+```
+
+# Things to Add in Your Custom Widget 
+
+In Your custom widget you can add isConnectedtoNetwork() to the button click to check if your clent network is back and it will remove the widget if network is back
+
+
+
+For more reference please follow the example folder in the repo
+
+
+## Feature requests and Bug reports
+
+Feel free to post a feature requests or report a bug [here](https://github.com/Oauth-Celestial/Connectivity_Watcher/issues).

@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  network_check:
+  connectivity_watcher:
     path: ../
   lottie: ^2.2.0
 

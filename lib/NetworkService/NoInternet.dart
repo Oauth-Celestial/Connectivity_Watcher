@@ -1,8 +1,7 @@
+import 'package:connectivity_watcher/NetworkService/Connectivity_Watcher.dart';
 import 'package:flutter/material.dart';
-import 'package:network_check/NetworkService/NetworkCheck.dart';
 
 class NoInternet extends StatelessWidget {
-  NetworkCheck? check;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -37,7 +36,7 @@ class NoInternet extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-                    NetworkCheck.shared.removeNoInternet();
+                    ConnectivityWatcher.shared.isConnectedtoNetwork();
                   },
                   child: Container(
                     alignment: Alignment.center,

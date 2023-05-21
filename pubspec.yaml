@@ -1,7 +1,7 @@
-name: network_check
-description: A new Flutter package project.
+name: connectivity_watcher
+description: Discover network connectivity changes throught the app with your own custom no internet widget.
 version: 0.0.1
-homepage:
+repository: "https://github.com/Oauth-Celestial/Connectivity_Watcher.git"
 
 environment:
   sdk: '>=2.19.6 <3.0.0'

@@ -1,6 +1,5 @@
+import 'package:connectivity_watcher/NetworkService/Connectivity_Watcher.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:lottie/lottie.dart';
 
 class CustomNoInternet extends StatefulWidget {
@@ -74,17 +73,22 @@ class _CustomNoInternetState extends State<CustomNoInternet>
               alignment: Alignment.topCenter,
               child: Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
-                child: Container(
-                  alignment: Alignment.center,
-                  width: 180,
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(30)),
-                  height: 50,
-                  child: Text(
-                    "Try Again",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                child: InkWell(
+                  onTap: () {
+                    ConnectivityWatcher.shared.isConnectedtoNetwork();
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: 180,
+                    decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(30)),
+                    height: 50,
+                    child: Text(
+                      "Try Again",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ),
