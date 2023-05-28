@@ -3,7 +3,9 @@
 
 ```dart
 import 'package:connectivity_watcher/NetworkService/Connectivity_Watcher.dart';
+import 'package:connectivity_watcher/NetworkService/Model/ConnectivityWidgetModel.dart';
 import 'package:example/NoInternet.dart';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,7 +20,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         navigatorKey: ConnectivityWatcher.contextKey,
-        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        title: 'Connectivity_Watcher',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
@@ -37,7 +40,8 @@ class _RedScreenState extends State<RedScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    ConnectivityWatcher.shared.setup(widgetForNoInternet: CustomNoInternet());
+    ConnectivityWatcher.shared.setup(
+        widgetForNoInternet: NoInternetWidget(widget: CustomNoInternet()));
     super.initState();
   }
 
@@ -48,5 +52,4 @@ class _RedScreenState extends State<RedScreen> {
     );
   }
 }
-
 ```

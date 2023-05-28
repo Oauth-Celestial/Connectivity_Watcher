@@ -51,7 +51,7 @@ Add setup code in the widget after the material app initialization as the key is
 
 # Things to Add in Your Custom Widget 
 
-In Your custom widget you can add isConnectedtoNetwork() to the button click to check if your clent network is back and it will remove the widget if network is back
+In Your custom widget you can add isConnectedtoNetwork() to the button click to check if your client network is back and it will remove the widget if network is back
 
 
 

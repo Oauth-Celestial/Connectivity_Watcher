@@ -1,3 +1,5 @@
+import 'package:connectivity_watcher/NetworkService/Model/ConnectivityWidgetModel.dart';
+import 'package:connectivity_watcher/NetworkService/DefaultNoInternet.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
@@ -8,12 +10,12 @@ class ConnectivityWatcher {
   OverlayEntry? entry;
   List<OverlayEntry> entries = [];
   OverlayState? overlayState;
-  Widget? noInternetWidget;
+  NoInternetWidget? userWidget;
 
   /// used to setup the connectivity listener and custom internet widget
 
-  setup({Widget? widgetForNoInternet}) async {
-    noInternetWidget = widgetForNoInternet;
+  setup({NoInternetWidget? widgetForNoInternet}) async {
+    userWidget = widgetForNoInternet;
 
     InternetConnectionChecker().onStatusChange.listen((status) {
       overlayState = (contextKey.currentState!.overlay);
@@ -38,7 +40,14 @@ class ConnectivityWatcher {
     bool isconnected = await InternetConnectionChecker().hasConnection;
     if (isconnected) {
       removeNoInternet();
-    } else {}
+    } else {
+      final scaffold = ScaffoldMessenger.of(contextKey.currentState!.context);
+      scaffold.showSnackBar(
+        SnackBar(
+          content: const Text("No Internet"),
+        ),
+      );
+    }
   }
 
   /// Removes the No internet widget from the tree
@@ -50,7 +59,10 @@ class ConnectivityWatcher {
   /// Responsible for getting the current context from the tree and draw the  custom widget
   showNoInternet() {
     entry = OverlayEntry(builder: (context) {
-      return noInternetWidget ?? Container();
+      return userWidget?.widget ??
+          DefaultNoInternetWidget(
+            userWidget: userWidget,
+          );
     });
     entries.add(entry!);
     overlayState?.insert(entry!);
