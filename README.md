@@ -42,7 +42,17 @@ Add ConnectivityWatcher.shared.setup in init state of the widget
 Note :
 Add setup code in the widget after the material app initialization as the key is not available at same level 
 
+
+
+
+<!-- ![Screenshot_1685376985_google-pixel4xl-justblack-portrait](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/34db1dbe-114f-4df7-8207-b4f76bfc4994) -->
+
 # For Default Widget
+
+
+<img src="https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/34db1dbe-114f-4df7-8207-b4f76bfc4994" width="300" height ="500">
+
+
 ```
   void initState() {
     // TODO: implement initState
@@ -53,6 +63,12 @@ Add setup code in the widget after the material app initialization as the key is
 
 
 # For Custom No Internet  Widget
+
+<img src="https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/a5cceac5-9925-4dae-9318-a020e50661d8" width="300" height ="500">
+
+<!-- ![Screenshot_1685377224_google-pixel4xl-justblack-portrait](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/a5cceac5-9925-4dae-9318-a020e50661d8) -->
+
+
 ```
   void initState() {
     // TODO: implement initState
