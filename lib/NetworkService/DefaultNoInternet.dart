@@ -2,6 +2,7 @@ import 'package:connectivity_watcher/NetworkService/Connectivity_Watcher.dart';
 import 'package:connectivity_watcher/NetworkService/Model/ConnectivityWidgetModel.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class DefaultNoInternetWidget extends StatelessWidget {
   NoInternetWidget? userWidget;
 
