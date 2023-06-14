@@ -12,7 +12,8 @@ class ConnectivityWatcher {
   OverlayState? overlayState;
   NoInternetWidget? userWidget;
 
-  /// used to setup the connectivity listener and custom internet widget
+  /// SetUp the connection listner
+  /// widgetForNoInternet: pass your no internet widget  if not passed default is set
 
   setup({NoInternetWidget? widgetForNoInternet}) async {
     userWidget = widgetForNoInternet;
@@ -50,7 +51,7 @@ class ConnectivityWatcher {
     }
   }
 
-  /// Removes the No internet widget from the tree
+  /// Removes the No internet widget from the tree and clears overlay entry
   removeNoInternet() {
     entries.forEach((entry) => entry.remove());
     entries.clear();
