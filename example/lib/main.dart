@@ -1,7 +1,9 @@
 import 'package:connectivity_watcher/NetworkService/Connectivity_Watcher.dart';
 import 'package:connectivity_watcher/NetworkService/Model/ConnectivityWidgetModel.dart';
+import 'package:connectivity_watcher/NetworkService/connectivity_widget.dart';
 import 'package:example/NoInternet.dart';
 import 'package:flutter/material.dart';
+import 'package:connectivity_watcher/NetworkService/connectivity_enum.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,6 +46,18 @@ class _RedScreenState extends State<RedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red,
+      body: ConnectivityWidget(builder: (context, status) {
+        if (status == ConnectivityWatcherStatus.connected) {
+          return Container(
+            alignment: Alignment.center,
+            child: Text("You are Connected"),
+          );
+        } else {
+          return Container(
+            child: Text("DisConnected"),
+          );
+        }
+      }),
     );
   }
 }
