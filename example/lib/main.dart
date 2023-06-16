@@ -1,7 +1,5 @@
+import 'package:connectivity_watcher/NetworkService/ConnectivityWidget/connectivity_widget.dart';
 import 'package:connectivity_watcher/NetworkService/Connectivity_Watcher.dart';
-import 'package:connectivity_watcher/NetworkService/Model/ConnectivityWidgetModel.dart';
-import 'package:connectivity_watcher/NetworkService/connectivity_widget.dart';
-import 'package:example/NoInternet.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_watcher/NetworkService/connectivity_enum.dart';
 
@@ -37,8 +35,8 @@ class _RedScreenState extends State<RedScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    ConnectivityWatcher.shared.setup(
-        widgetForNoInternet: NoInternetWidget(widget: CustomNoInternet()));
+    // ConnectivityWatcher.shared.setup(
+    //     widgetForNoInternet: NoInternetWidget(widget: CustomNoInternet()));
     super.initState();
   }
 
@@ -47,6 +45,7 @@ class _RedScreenState extends State<RedScreen> {
     return Scaffold(
       backgroundColor: Colors.red,
       body: ConnectivityWidget(builder: (context, status) {
+        print(status);
         if (status == ConnectivityWatcherStatus.connected) {
           return Container(
             alignment: Alignment.center,
