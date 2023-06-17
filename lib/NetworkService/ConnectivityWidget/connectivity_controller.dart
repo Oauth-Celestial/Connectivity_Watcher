@@ -16,7 +16,7 @@ class ConnectivityController with ChangeNotifier {
           break;
         case InternetConnectionStatus.disconnected:
           internetStatus = ConnectivityWatcherStatus.disconnected;
-
+          notifyListeners();
           print('You are disconnected from the internet.');
           break;
       }

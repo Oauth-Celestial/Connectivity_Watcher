@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+///
 typedef ConnectivityBuilder = Widget Function(
     BuildContext context, ConnectivityWatcherStatus s);
 

@@ -64,7 +64,7 @@ class DefaultNoInternetWidget extends StatelessWidget {
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: InkWell(
                   onTap: () {
-                    ConnectivityWatcher.shared.isConnectedtoNetwork();
+                    ConnectivityWatcher.shared.shouldRemoveNoInternet();
                   },
                   child: Container(
                     alignment: Alignment.center,

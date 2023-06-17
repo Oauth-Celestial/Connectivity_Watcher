@@ -4,12 +4,25 @@ import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class ConnectivityWatcher {
+  ConnectivityWatcher._();
+
+  /// Global context key for getting context throught the app
   static final GlobalKey<NavigatorState> contextKey =
       GlobalKey<NavigatorState>();
-  static ConnectivityWatcher shared = ConnectivityWatcher();
+
+  /// Shared instance of Connectivity watcher
+  static ConnectivityWatcher shared = ConnectivityWatcher._();
+
+  /// Overlay instance
   OverlayEntry? entry;
+
+  /// list of overlay entries to all the reference of overlays drawn
   List<OverlayEntry> entries = [];
+
+  /// Overlay state
   OverlayState? overlayState;
+
+  /// Custom No Internet widget provided by the user
   NoInternetWidget? userWidget;
 
   /// SetUp the connection listner
@@ -21,12 +34,15 @@ class ConnectivityWatcher {
     InternetConnectionChecker().onStatusChange.listen((status) {
       overlayState = (contextKey.currentState!.overlay);
       switch (status) {
+        /// ConnectedState
         case InternetConnectionStatus.connected:
           try {
             removeNoInternet();
           } catch (e) {}
           print('You are Connected to the internet.');
           break;
+
+        /// DisconnectedState
         case InternetConnectionStatus.disconnected:
           showNoInternet();
           print('You are disconnected from the internet.');
@@ -37,7 +53,7 @@ class ConnectivityWatcher {
 
   /// Checks if the internet connect is back and removes the no internet widget
 
-  isConnectedtoNetwork() async {
+  shouldRemoveNoInternet() async {
     bool isconnected = await InternetConnectionChecker().hasConnection;
     if (isconnected) {
       removeNoInternet();
@@ -67,5 +83,10 @@ class ConnectivityWatcher {
     });
     entries.add(entry!);
     overlayState?.insert(entry!);
+  }
+
+  Future<bool> getConnectivityStatus() async {
+    bool isconnected = await InternetConnectionChecker().hasConnection;
+    return isconnected;
   }
 }

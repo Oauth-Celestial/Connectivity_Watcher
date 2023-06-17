@@ -1,4 +1,6 @@
+import 'package:connectivity_watcher/NetworkService/ConnectivityWidget/connectivity_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 ///[ConnectivityAppWrapper] is a StatelessWidget.
 class ConnectivityWatcherAppWrapper extends StatelessWidget {
@@ -9,6 +11,15 @@ class ConnectivityWatcherAppWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return app;
+    return ChangeNotifierProvider(
+      create: (context) => ConnectivityController(),
+      builder: (context, child) {
+        return Builder(builder: (context) {
+          Provider.of<ConnectivityController>(context, listen: false)
+              .setupConnectivityListner();
+          return app;
+        });
+      },
+    );
   }
 }

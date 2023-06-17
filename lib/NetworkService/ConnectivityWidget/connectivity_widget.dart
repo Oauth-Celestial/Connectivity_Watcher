@@ -1,5 +1,6 @@
+import 'package:connectivity_watcher/NetworkService/ConnectivityWidget/connectivity_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:provider/provider.dart';
 import '../connectivity_enum.dart';
 
 class ConnectivityWidget extends StatefulWidget {
@@ -13,7 +14,6 @@ class ConnectivityWidget extends StatefulWidget {
 }
 
 class _ConnectivityWidgetState extends State<ConnectivityWidget> {
-  ConnectivityWatcherStatus? internetStatus;
   @override
   void initState() {
     // TODO: implement initState
@@ -22,7 +22,10 @@ class _ConnectivityWidgetState extends State<ConnectivityWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.builder(
-        context, internetStatus ?? ConnectivityWatcherStatus.disconnected);
+    return Consumer<ConnectivityController>(
+        builder: (context, controller, child) {
+      return widget.builder(context,
+          controller.internetStatus ?? ConnectivityWatcherStatus.disconnected);
+    });
   }
 }
