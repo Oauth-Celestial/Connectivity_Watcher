@@ -14,25 +14,25 @@ class ConnectivityWatcher {
   static ConnectivityWatcher shared = ConnectivityWatcher._();
 
   /// Overlay instance
-  OverlayEntry? entry;
+  OverlayEntry? _entry;
 
   /// list of overlay entries to all the reference of overlays drawn
-  List<OverlayEntry> entries = [];
+  List<OverlayEntry> _entries = [];
 
   /// Overlay state
-  OverlayState? overlayState;
+  OverlayState? _overlayState;
 
   /// Custom No Internet widget provided by the user
-  NoInternetWidget? userWidget;
+  NoInternetWidget? _userWidget;
 
   /// SetUp the connection listner
   /// widgetForNoInternet: pass your no internet widget  if not passed default is set
 
   setup({NoInternetWidget? widgetForNoInternet}) async {
-    userWidget = widgetForNoInternet;
+    _userWidget = widgetForNoInternet;
 
     InternetConnectionChecker().onStatusChange.listen((status) {
-      overlayState = (contextKey.currentState!.overlay);
+      _overlayState = (contextKey.currentState!.overlay);
       switch (status) {
         /// ConnectedState
         case InternetConnectionStatus.connected:
@@ -52,7 +52,6 @@ class ConnectivityWatcher {
   }
 
   /// Checks if the internet connect is back and removes the no internet widget
-
   shouldRemoveNoInternet() async {
     bool isconnected = await InternetConnectionChecker().hasConnection;
     if (isconnected) {
@@ -69,20 +68,20 @@ class ConnectivityWatcher {
 
   /// Removes the No internet widget from the tree and clears overlay entry
   removeNoInternet() {
-    entries.forEach((entry) => entry.remove());
-    entries.clear();
+    _entries.forEach((entry) => entry.remove());
+    _entries.clear();
   }
 
   /// Responsible for getting the current context from the tree and draw the  custom widget
   showNoInternet() {
-    entry = OverlayEntry(builder: (context) {
-      return userWidget?.widget ??
+    _entry = OverlayEntry(builder: (context) {
+      return _userWidget?.widget ??
           DefaultNoInternetWidget(
-            userWidget: userWidget,
+            userWidget: _userWidget,
           );
     });
-    entries.add(entry!);
-    overlayState?.insert(entry!);
+    _entries.add(_entry!);
+    _overlayState?.insert(_entry!);
   }
 
   Future<bool> getConnectivityStatus() async {

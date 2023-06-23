@@ -2,7 +2,6 @@ import 'package:connectivity_watcher/NetworkService/ConnectivityWidget/connectiv
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-///[ConnectivityAppWrapper] is a StatelessWidget.
 class ConnectivityWatcherAppWrapper extends StatelessWidget {
   /// [app] will accept MaterialApp or CupertinoApp must be non-null
   final Widget app;

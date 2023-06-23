@@ -1,6 +1,7 @@
 import 'package:connectivity_watcher/NetworkService/ConnectivityWidget/connectivity_watcher_app.dart';
 import 'package:connectivity_watcher/NetworkService/ConnectivityWidget/connectivity_widget.dart';
 import 'package:connectivity_watcher/NetworkService/Connectivity_Watcher.dart';
+import 'package:connectivity_watcher/NetworkService/WidgetOrShimmer/widget_or_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_watcher/NetworkService/connectivity_enum.dart';
 
@@ -47,34 +48,19 @@ class _RedScreenState extends State<RedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red,
-      body: ConnectivityWidget(builder: (context, status) {
-        print(status);
-        if (status == ConnectivityWatcherStatus.connected) {
-          return InkWell(
-            onTap: () async {
-              bool status =
-                  await ConnectivityWatcher.shared.getConnectivityStatus();
-              print(status);
-            },
-            child: Container(
-              alignment: Alignment.center,
-              child: Text("You are Connected"),
-            ),
-          );
-        } else {
-          return InkWell(
-            onTap: () async {
-              bool status =
-                  await ConnectivityWatcher.shared.getConnectivityStatus();
-              print(status);
-            },
-            child: Container(
-              alignment: Alignment.center,
-              child: Text("DisConnected"),
-            ),
-          );
-        }
-      }),
+      body: Container(
+          alignment: Alignment.center,
+          child: WidgetOrShimmer(
+              showShimmer: true,
+              child: ClipOval(
+                child: Container(
+                  child: Container(
+                    color: Colors.yellow,
+                    width: 200,
+                    height: 200,
+                  ),
+                ),
+              ))),
     );
   }
 }
