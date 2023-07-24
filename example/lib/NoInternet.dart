@@ -1,4 +1,4 @@
-import 'package:connectivity_watcher/NetworkService/Connectivity_Watcher.dart';
+import 'package:connectivity_watcher/NetworkService/utils/connectivity_watcher.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 

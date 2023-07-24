@@ -1,7 +1,7 @@
 import 'package:connectivity_watcher/NetworkService/ConnectivityWidget/connectivity_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../connectivity_enum.dart';
+import '../Model/connectivity_enum.dart';
 
 // ignore: must_be_immutable
 class ConnectivityWidget extends StatefulWidget {
