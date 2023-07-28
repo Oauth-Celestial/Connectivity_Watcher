@@ -1,5 +1,3 @@
-
-import 'package:connectivity_watcher/NetworkService/widgets/connectivity_watcher_app.dart';
 import 'package:connectivity_watcher/network_check.dart';
 import 'package:flutter/material.dart';
 
