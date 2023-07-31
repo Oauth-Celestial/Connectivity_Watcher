@@ -1,4 +1,4 @@
-import 'package:connectivity_watcher/NetworkService/Model/ConnectivityWidgetModel.dart';
+import 'package:connectivity_watcher/NetworkService/Model/no_internet_model.dart';
 import 'package:connectivity_watcher/NetworkService/widgets/default_no_internet.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';

@@ -4,20 +4,23 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class ConnectivityController with ChangeNotifier {
   ConnectivityWatcherStatus? internetStatus;
+  InternetConnectionChecker checker = InternetConnectionChecker.createInstance(
+    checkInterval: Duration(seconds: 2),
+    checkTimeout: Duration(seconds: 2)
+    
+  );
   setupConnectivityListner() {
     /// Add Internet Connectivity listner
-    InternetConnectionChecker().onStatusChange.listen((status) {
+   checker.onStatusChange.listen((status) {
       switch (status) {
         case InternetConnectionStatus.connected:
           try {
             internetStatus = ConnectivityWatcherStatus.connected;
           } catch (e) {}
-          print('You are Connected to the internet.');
+         
           break;
         case InternetConnectionStatus.disconnected:
           internetStatus = ConnectivityWatcherStatus.disconnected;
-          notifyListeners();
-          print('You are disconnected from the internet.');
           break;
       }
       notifyListeners();

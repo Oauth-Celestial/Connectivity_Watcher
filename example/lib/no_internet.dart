@@ -74,8 +74,11 @@ class _CustomNoInternetState extends State<CustomNoInternet>
               child: Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: InkWell(
-                  onTap: () {
-                    ConnectivityWatcher.shared.shouldRemoveNoInternet();
+                  onTap: () async{
+                    //ConnectivityWatcher.shared.shouldRemoveNoInternet();
+                    bool isInternetConnected = await ConnectivityWatcher.shared.getConnectivityStatus();
+
+                    print(isInternetConnected);
                   },
                   child: Container(
                     alignment: Alignment.center,

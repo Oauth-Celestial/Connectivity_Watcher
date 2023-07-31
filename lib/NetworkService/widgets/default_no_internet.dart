@@ -1,5 +1,5 @@
 import 'package:connectivity_watcher/NetworkService/utils/connectivity_watcher.dart';
-import 'package:connectivity_watcher/NetworkService/Model/ConnectivityWidgetModel.dart';
+import 'package:connectivity_watcher/NetworkService/Model/no_internet_model.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable

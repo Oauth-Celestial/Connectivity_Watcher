@@ -1,4 +1,5 @@
 import 'package:connectivity_watcher/network_check.dart';
+import 'package:example/no_internet.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -8,10 +9,11 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+ 
   @override
   Widget build(BuildContext context) {
     return ConnectivityWatcherAppWrapper(
+      noInternetWidget: CustomNoInternet(), // Place your custom no internet Widget
       app: MaterialApp(
           navigatorKey: ConnectivityWatcher.contextKey,
           debugShowCheckedModeBanner: false,
@@ -19,24 +21,22 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: RedScreen()),
+          home: TestScreen()),
     );
   }
 }
 
-class RedScreen extends StatefulWidget {
-  const RedScreen({super.key});
+class TestScreen extends StatefulWidget {
+  const TestScreen({super.key});
 
   @override
-  State<RedScreen> createState() => _RedScreenState();
+  State<TestScreen> createState() => _TestScreenState();
 }
 
-class _RedScreenState extends State<RedScreen> {
+class _TestScreenState extends State<TestScreen> {
   @override
   void initState() {
     // TODO: implement initState
-    // ConnectivityWatcher.shared.setup(
-    //     widgetForNoInternet: NoInternetWidget(widget: CustomNoInternet()));
     super.initState();
   }
 
@@ -44,9 +44,11 @@ class _RedScreenState extends State<RedScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.red,
-      body: Container(
-          alignment: Alignment.center,
-          ),
+      body: SafeArea(
+        child: Container(
+            alignment: Alignment.center,
+            ),
+      ),
     );
   }
 }
