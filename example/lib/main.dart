@@ -9,19 +9,21 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
- 
   @override
   Widget build(BuildContext context) {
-    return ConnectivityWatcherAppWrapper(
-      noInternetWidget: CustomNoInternet(), // Place your custom no internet Widget
-      app: MaterialApp(
-          navigatorKey: ConnectivityWatcher.contextKey,
-          debugShowCheckedModeBanner: false,
-          title: 'Connectivity_Watcher',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home: TestScreen()),
+    return ConnectionAwareApp(
+      noInternetWidget:
+          CustomNoInternet(), // Place your custom no internet Widget
+      builder: (context, connectionKey) {
+        return MaterialApp(
+            navigatorKey: connectionKey,
+            debugShowCheckedModeBanner: false,
+            title: 'Connectivity_Watcher',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            home: TestScreen());
+      },
     );
   }
 }
@@ -46,8 +48,8 @@ class _TestScreenState extends State<TestScreen> {
       backgroundColor: Colors.red,
       body: SafeArea(
         child: Container(
-            alignment: Alignment.center,
-            ),
+          alignment: Alignment.center,
+        ),
       ),
     );
   }

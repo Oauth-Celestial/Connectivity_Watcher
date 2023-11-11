@@ -1,5 +1,4 @@
-import 'package:connectivity_watcher/NetworkService/utils/connectivity_watcher.dart';
-import 'package:connectivity_watcher/NetworkService/Model/no_internet_model.dart';
+import 'package:connectivity_watcher/Model/no_internet_model.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
@@ -63,9 +62,7 @@ class DefaultNoInternetWidget extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: InkWell(
-                  onTap: () {
-                    ConnectivityWatcher.shared.shouldRemoveNoInternet();
-                  },
+                  onTap: () {},
                   child: Container(
                     alignment: Alignment.center,
                     width: 180,

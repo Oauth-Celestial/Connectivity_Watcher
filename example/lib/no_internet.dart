@@ -1,4 +1,4 @@
-import 'package:connectivity_watcher/NetworkService/utils/connectivity_watcher.dart';
+import 'package:connectivity_watcher/network_check.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -74,11 +74,8 @@ class _CustomNoInternetState extends State<CustomNoInternet>
               child: Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: InkWell(
-                  onTap: () async{
+                  onTap: () async {
                     //ConnectivityWatcher.shared.shouldRemoveNoInternet();
-                    bool isInternetConnected = await ConnectivityWatcher.shared.getConnectivityStatus();
-
-                    print(isInternetConnected);
                   },
                   child: Container(
                     alignment: Alignment.center,

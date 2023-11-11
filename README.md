@@ -1,6 +1,6 @@
 
 
-## Connectivity_Watcher 📡
+## connectivity_watcher 📡
 
 In Modern apps we come across situation where we are given a nointernet screen which will be visible when ever user losses the connectivity. As maintaining internet state throught the app is not an easy task we have to write lot of boiler plate to achieve this kind of functionality. But no more 
 
@@ -8,6 +8,11 @@ In Modern apps we come across situation where we are given a nointernet screen w
 Introducing Connectivity_Watcher 
 
 The Simple Package can help you achieve all of this with single wrapper widget Just Follow the steps 
+
+Preview
+
+
+![VID-20230731-WA0001 (online-video-cutter com)](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/d684713c-398f-48c7-8dc8-d35d33369c9f)
 
 
 ## Getting started
@@ -40,6 +45,14 @@ ConnectivityWatcherAppWrapper(
 Whats the CustomNoInternet ?
 
 This is the widget that you want to show when user losses the internet connection.
+
+
+## Get Connection Status
+
+```dart
+bool isInternetConnected = await ConnectivityWatcher.shared.getConnectivityStatus();
+
+```
 
 
 For more reference please follow the example folder in the repo
