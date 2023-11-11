@@ -1,6 +1,6 @@
-import 'package:connectivity_watcher/Model/no_internet_model.dart';
 import 'package:connectivity_watcher/utils/enums/enum_connection.dart';
-import 'package:connectivity_watcher/widgets/default_no_internet.dart';
+import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
+
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
@@ -17,16 +17,21 @@ class ConnectivityController with ChangeNotifier {
   OverlayState? _overlayState;
 
   /// Custom No Internet widget provided by the user
-  NoInternetWidget? _userWidget;
+  CustomNoInternetWrapper? _userWidget;
   NoConnectivityStyle? _connectivityStyle;
   InternetConnectionChecker checker = InternetConnectionChecker.createInstance(
       checkInterval: Duration(seconds: 2), checkTimeout: Duration(seconds: 2));
   setupConnectivityListner(
-      {NoInternetWidget? widgetForNoInternet,
+      {CustomNoInternetWrapper? widgetForNoInternet,
       NoConnectivityStyle? connectivityStyle =
           NoConnectivityStyle.SNACKBAR}) async {
     _userWidget = widgetForNoInternet;
     _connectivityStyle = connectivityStyle;
+
+    if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
+        _userWidget == null) {
+      throw ("widgetForNoInternet is missing");
+    }
 
     InternetConnectionChecker().onStatusChange.listen((status) {
       _overlayState = (contextKey.currentState!.overlay);
@@ -46,6 +51,17 @@ class ConnectivityController with ChangeNotifier {
           break;
       }
     });
+  }
+
+  isInternetBack({required Function(bool) internetStatus}) async {
+    bool isConnected = await InternetConnectionChecker().hasConnection;
+
+    if (isConnected) {
+      _removeNoInternet();
+      internetStatus(true);
+    } else {
+      return internetStatus(false);
+    }
   }
 
   /// SetUp the connection listner
@@ -76,9 +92,10 @@ class ConnectivityController with ChangeNotifier {
   /// Responsible for getting the current context from the tree and draw the  custom widget
   showNoInternet() {
     _entry = OverlayEntry(builder: (context) {
-      return _userWidget?.widget ??
-          DefaultNoInternetWidget(
-            userWidget: _userWidget,
+      return _userWidget ??
+          Container(
+            color: Colors.amber,
+            child: Text("No Internet"),
           );
     });
     _entries.add(_entry!);

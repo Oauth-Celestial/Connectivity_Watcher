@@ -1,6 +1,7 @@
 import 'package:connectivity_watcher/controller/connectivity_controller.dart';
 import 'package:connectivity_watcher/utils/enums/enum_connection.dart';
 import 'package:connectivity_watcher/watcher_barrel.dart';
+import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,35 +10,21 @@ import 'package:provider/provider.dart';
 typedef ConnectionBuilder = Widget Function(
     BuildContext, GlobalKey<NavigatorState>);
 
-class ConnectionAwareApp extends StatefulWidget {
+class ConnectionAwareApp extends StatelessWidget {
   /// [app] will accept MaterialApp or CupertinoApp must be non-null
 
   /// No internet widget thats to be shown
-  Widget? noInternetWidget;
+  final CustomNoInternetWrapper? noInternetWidget;
 
-  NoConnectivityStyle? connectivityStyle;
+  final NoConnectivityStyle? connectivityStyle;
 
-  ConnectionBuilder builder;
+  final ConnectionBuilder builder;
 
   ConnectionAwareApp(
       {super.key,
       required this.builder,
       this.noInternetWidget,
       this.connectivityStyle = NoConnectivityStyle.SNACKBAR});
-
-  @override
-  State<ConnectionAwareApp> createState() => _ConnectionAwareAppState();
-}
-
-class _ConnectionAwareAppState extends State<ConnectionAwareApp> {
-  @override
-  void initState() {
-    // TODO: implement initState
-
-    /// Initialize
-
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +34,9 @@ class _ConnectionAwareAppState extends State<ConnectionAwareApp> {
         return Builder(builder: (context) {
           Provider.of<ConnectivityController>(context, listen: false)
               .setupConnectivityListner(
-                  widgetForNoInternet:
-                      NoInternetWidget(widget: widget.noInternetWidget));
-          return widget.builder(
+                  widgetForNoInternet: noInternetWidget,
+                  connectivityStyle: connectivityStyle);
+          return builder(
               context, context.read<ConnectivityController>().contextKey);
         });
       },
