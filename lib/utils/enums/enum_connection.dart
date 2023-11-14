@@ -6,4 +6,4 @@ enum ConnectivityWatcherStatus {
   disconnected,
 }
 
-enum NoConnectivityStyle { SNACKBAR, CUSTOM }
+enum NoConnectivityStyle { SNACKBAR, ALERT, CUSTOM }

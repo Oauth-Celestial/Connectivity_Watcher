@@ -1,4 +1,3 @@
-import 'package:connectivity_watcher/network_check.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 

@@ -1,7 +1,6 @@
 import 'package:connectivity_watcher/controller/connectivity_controller.dart';
 import 'package:connectivity_watcher/network_check.dart';
 import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
-import 'package:example/no_internet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +14,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConnectionAwareApp(
-      connectivityStyle: NoConnectivityStyle.CUSTOM,
+      connectivityStyle: NoConnectivityStyle.ALERT,
+      // connectivityStyle: NoConnectivityStyle.CUSTOM,
       noInternetWidget: CustomNoInternetWrapper(
         builder: (context) {
           return Container(
