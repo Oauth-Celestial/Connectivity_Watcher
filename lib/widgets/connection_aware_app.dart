@@ -5,8 +5,7 @@ import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
-
+/// Builder defination
 typedef ConnectionBuilder = Widget Function(
     BuildContext, GlobalKey<NavigatorState>);
 
@@ -14,8 +13,9 @@ class ConnectionAwareApp extends StatelessWidget {
   /// [app] will accept MaterialApp or CupertinoApp must be non-null
 
   /// No internet widget thats to be shown
-  final CustomNoInternetWrapper? noInternetWidget;
+  final CustomNoInternetWrapper? offlineWidget;
 
+  /// Connection Style for the Wrapper : Default to snackbar
   final NoConnectivityStyle? connectivityStyle;
 
   final ConnectionBuilder builder;
@@ -23,7 +23,7 @@ class ConnectionAwareApp extends StatelessWidget {
   ConnectionAwareApp(
       {super.key,
       required this.builder,
-      this.noInternetWidget,
+      this.offlineWidget,
       this.connectivityStyle = NoConnectivityStyle.SNACKBAR});
 
   @override
@@ -34,7 +34,7 @@ class ConnectionAwareApp extends StatelessWidget {
         return Builder(builder: (context) {
           Provider.of<ConnectivityController>(context, listen: false)
               .setupConnectivityListner(
-                  widgetForNoInternet: noInternetWidget,
+                  offlineWidget: offlineWidget,
                   connectivityStyle: connectivityStyle);
           return builder(
               context, context.read<ConnectivityController>().contextKey);

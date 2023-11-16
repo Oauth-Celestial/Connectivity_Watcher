@@ -1,6 +1,6 @@
 name: connectivity_watcher
 description: Discover network connectivity changes throught the app with your own custom no internet widget.
-version: 1.0.0
+version: 1.0.1
 repository: "https://github.com/Oauth-Celestial/Connectivity_Watcher.git"
 
 environment:

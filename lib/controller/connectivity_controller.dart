@@ -24,10 +24,10 @@ class ConnectivityController with ChangeNotifier {
   InternetConnectionChecker checker = InternetConnectionChecker.createInstance(
       checkInterval: Duration(seconds: 2), checkTimeout: Duration(seconds: 2));
   setupConnectivityListner(
-      {CustomNoInternetWrapper? widgetForNoInternet,
+      {CustomNoInternetWrapper? offlineWidget,
       NoConnectivityStyle? connectivityStyle =
           NoConnectivityStyle.SNACKBAR}) async {
-    _userWidget = widgetForNoInternet;
+    _userWidget = offlineWidget;
     _connectivityStyle = connectivityStyle;
 
     if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
