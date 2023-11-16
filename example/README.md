@@ -2,11 +2,12 @@
 ## Example
 
 ```dart
-import 'package:connectivity_watcher/NetworkService/Connectivity_Watcher.dart';
-import 'package:connectivity_watcher/NetworkService/Model/ConnectivityWidgetModel.dart';
-import 'package:example/NoInternet.dart';
-
+import 'package:connectivity_watcher/controller/connectivity_controller.dart';
+import 'package:connectivity_watcher/network_check.dart';
+import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
+import 'package:example/no_internet.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,41 +16,107 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        navigatorKey: ConnectivityWatcher.contextKey,
-        debugShowCheckedModeBanner: false,
-        title: 'Connectivity_Watcher',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: RedScreen());
-  }
-}
-
-class RedScreen extends StatefulWidget {
-  const RedScreen({super.key});
-
-  @override
-  State<RedScreen> createState() => _RedScreenState();
-}
-
-class _RedScreenState extends State<RedScreen> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    ConnectivityWatcher.shared.setup(
-        widgetForNoInternet: NoInternetWidget(widget: CustomNoInternet()));
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.red,
+    return ConnectionAwareApp(
+       /// connectivityStyle: NoConnectivityStyle.CUSTOM,
+      connectivityStyle: NoConnectivityStyle.CUSTOM,
+     
+      offlineWidget: CustomNoInternetWrapper(
+        builder: (context) {
+          return CustomNoInternet();
+        },
+      ),
+      // Place your custom no internet Widget
+      builder: (context, connectionKey) {
+        return MaterialApp(
+            navigatorKey: connectionKey,
+            debugShowCheckedModeBanner: false,
+            title: 'Connectivity_Watcher',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            home: LoginDemo());
+      },
     );
   }
 }
+
+class LoginDemo extends StatefulWidget {
+  @override
+  _LoginDemoState createState() => _LoginDemoState();
+}
+
+class _LoginDemoState extends State<LoginDemo> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("Login Page"),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 200,
+            ),
+            Padding(
+              //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Email',
+                    hintText: 'Enter valid email id as abc@gmail.com'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 15, bottom: 0),
+            
+              child: TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Password',
+                    hintText: 'Enter secure password'),
+              ),
+            ),
+            MaterialButton(
+              onPressed: () {
+                context.read<ConnectivityController>().isInternetBack(
+                    internetStatus: (status) {
+// Your Code
+                });
+              },
+              child: Text(
+                'Forgot Password',
+                style: TextStyle(color: Colors.blue, fontSize: 15),
+              ),
+            ),
+            Container(
+              height: 50,
+              width: 250,
+              decoration: BoxDecoration(
+                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+              child: MaterialButton(
+                onPressed: () {},
+                child: Text(
+                  'Login',
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 130,
+            ),
+            Text('New User? Create Account')
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 ```

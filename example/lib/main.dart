@@ -1,7 +1,9 @@
+import 'package:connectivity_watcher/controller/connectivity_controller.dart';
 import 'package:connectivity_watcher/network_check.dart';
 import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
 import 'package:example/no_internet.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,8 +15,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConnectionAwareApp(
+      /// connectivityStyle: NoConnectivityStyle.CUSTOM,
       connectivityStyle: NoConnectivityStyle.CUSTOM,
-      // connectivityStyle: NoConnectivityStyle.CUSTOM,
+
       offlineWidget: CustomNoInternetWrapper(
         builder: (context) {
           return CustomNoInternet();
@@ -51,19 +54,6 @@ class _LoginDemoState extends State<LoginDemo> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            // Padding(
-            //   padding: const EdgeInsets.only(top: 60.0),
-            //   child: Center(
-            //     child: Container(
-            //         width: 200,
-            //         height: 150,
-            //         /*decoration: BoxDecoration(
-            //             color: Colors.red,
-            //             borderRadius: BorderRadius.circular(50.0)),*/
-            //         child: Image.asset('asset/images/flutter-logo.png')),
-            //   ),
-            // ),
-
             SizedBox(
               height: 200,
             ),
@@ -80,7 +70,6 @@ class _LoginDemoState extends State<LoginDemo> {
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 obscureText: true,
                 decoration: InputDecoration(
@@ -91,7 +80,10 @@ class _LoginDemoState extends State<LoginDemo> {
             ),
             MaterialButton(
               onPressed: () {
-                //TODO FORGOT PASSWORD SCREEN GOES HERE
+                context.read<ConnectivityController>().isInternetBack(
+                    internetStatus: (status) {
+// Your Code
+                });
               },
               child: Text(
                 'Forgot Password',
