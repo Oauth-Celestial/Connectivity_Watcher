@@ -13,7 +13,7 @@ First, add connectivity_watcher as a dependency in your pubspec.yaml file
 connectivity_watcher: 1.0.1
 ```
 
-## Usage
+## Usage 🚀
 
 ### The lazy method: 😴💤
 
@@ -107,13 +107,22 @@ Widget build(BuildContext context) {
 https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/d784b345-f46b-4751-8779-f6f152637987
 
 
+## Check Internet Status
+
+```
+ context.read<ConnectivityController>().isInternetBack(internetStatus: (status){
+// Your Code 
+ });
+```
 
 
 
 
+## Contribution 🤝
+
+Feel free to contribute and open pull requests. 🙌
 
 
-
-
+## Issues and Feedback 🐛
 
 Feel free to post a feature requests or report a bug [here](https://github.com/Oauth-Celestial/Connectivity_Watcher/issues).
