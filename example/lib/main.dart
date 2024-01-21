@@ -4,7 +4,7 @@ import 'package:connectivity_watcher/controller/connectivity_controller.dart';
 import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
 import 'package:example/no_internet.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 
 void main() {
   runApp(const MyApp());

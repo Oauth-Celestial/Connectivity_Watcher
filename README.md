@@ -10,7 +10,7 @@ Effortlessly adapt to changing network conditions with a single wrapper that sea
 First, add connectivity_watcher as a dependency in your pubspec.yaml file
 
 ```dart
-connectivity_watcher: 1.0.1
+connectivity_watcher: 1.0.2
 ```
 
 ## Usage 🚀
@@ -104,6 +104,17 @@ Widget build(BuildContext context) {
 
 ```
 
+**Note:** The package will automatically remove the custom widget if internet is back but in case its not removed you can use the follwing method to remove it 
+```
+bool hasRemoved = await   ConnectivityWatcher.instance.hideNoInternet(currentContext: context);
+                   if(hasRemoved){
+                   // your code after internet is back
+                   }
+                   else{
+                    print("No Internet");
+                   }
+```
+
 # Preview
 
 ![custom](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/b72c6bcc-d782-4bbf-93fe-a7b63f8ea818)
@@ -113,13 +124,8 @@ Widget build(BuildContext context) {
 ## Check Internet Status
 
 ```
- context.read<ConnectivityController>().isInternetBack(internetStatus: (status){
-// Your Code 
- });
+bool hasInternet = await   ConnectivityWatcher.instance.getConnectivityStatus(currentContext: context);
 ```
-
-
-
 
 ## Contribution 🤝
 
