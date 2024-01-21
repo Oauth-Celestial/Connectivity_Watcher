@@ -1,5 +1,6 @@
+
+import 'package:connectivity_watcher/connectivity_watcher.dart';
 import 'package:connectivity_watcher/controller/connectivity_controller.dart';
-import 'package:connectivity_watcher/network_check.dart';
 import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
 import 'package:example/no_internet.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     return ConnectionAwareApp(
       /// connectivityStyle: NoConnectivityStyle.CUSTOM,
       connectivityStyle: NoConnectivityStyle.CUSTOM,
+      noInternetText: Text("Testing message", style: TextStyle(color: Colors.red),),
 
       offlineWidget: CustomNoInternetWrapper(
         builder: (context) {
@@ -79,11 +81,9 @@ class _LoginDemoState extends State<LoginDemo> {
               ),
             ),
             MaterialButton(
-              onPressed: () {
-                context.read<ConnectivityController>().isInternetBack(
-                    internetStatus: (status) {
-// Your Code
-                });
+              onPressed: ()async {
+            bool internetStatus = await   ConnectivityWatcher.instance.getConnectivityStatus(currentContext: context);
+            print(internetStatus);
               },
               child: Text(
                 'Forgot Password',
@@ -96,7 +96,11 @@ class _LoginDemoState extends State<LoginDemo> {
               decoration: BoxDecoration(
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: MaterialButton(
-                onPressed: () {},
+                onPressed: () async  {
+
+               bool hasInternet = await   ConnectivityWatcher.instance.getConnectivityStatus(currentContext: context);
+               print(hasInternet);
+                },
                 child: Text(
                   'Login',
                   style: TextStyle(color: Colors.white, fontSize: 25),

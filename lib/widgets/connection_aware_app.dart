@@ -19,10 +19,13 @@ class ConnectionAwareApp extends StatelessWidget {
   final NoConnectivityStyle? connectivityStyle;
 
   final ConnectionBuilder builder;
+ ///
+ final  Widget? noInternetText;
 
   ConnectionAwareApp(
       {super.key,
       required this.builder,
+      this.noInternetText,
       this.offlineWidget,
       this.connectivityStyle = NoConnectivityStyle.SNACKBAR});
 
@@ -35,6 +38,7 @@ class ConnectionAwareApp extends StatelessWidget {
           Provider.of<ConnectivityController>(context, listen: false)
               .setupConnectivityListner(
                   offlineWidget: offlineWidget,
+                  noInternetText: noInternetText,
                   connectivityStyle: connectivityStyle);
           return builder(
               context, context.read<ConnectivityController>().contextKey);

@@ -1,3 +1,4 @@
+import 'package:connectivity_watcher/controller/connectivity_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -35,9 +36,9 @@ class _CustomNoInternetState extends State<CustomNoInternet>
                 repeat: false, onLoaded: (composition) {
               controller?.duration = composition.duration;
 
-              controller?.forward().whenComplete(() async {
-                print("dONE");
-              });
+              // controller?.forward().whenComplete(() async {
+              //   print("dONE");
+              // });
             }),
           ),
           Text(
@@ -74,7 +75,13 @@ class _CustomNoInternetState extends State<CustomNoInternet>
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: InkWell(
                   onTap: () async {
-                    //ConnectivityWatcher.shared.shouldRemoveNoInternet();
+            bool hasRemoved = await   ConnectivityWatcher.instance.hideNoInternet(currentContext: context);
+                   if(hasRemoved){
+                   
+                   }
+                   else{
+                    print("No Internet");
+                   }
                   },
                   child: Container(
                     alignment: Alignment.center,

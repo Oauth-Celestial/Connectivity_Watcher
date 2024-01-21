@@ -4,15 +4,38 @@ import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:provider/provider.dart';
+
+
+class ConnectivityWatcher{
+
+ConnectivityWatcher._();
+
+static ConnectivityWatcher get instance => ConnectivityWatcher._();
+
+Future<bool> hideNoInternet({ required BuildContext currentContext} ) async{
+ return await currentContext.read<ConnectivityController>().hideNoInternetScreen();
+}
+
+Future<bool> getConnectivityStatus({  required  BuildContext currentContext}){
+return currentContext.read<ConnectivityController>().getConnectivityStatus();
+}
+}
+
+
 
 class ConnectivityController with ChangeNotifier {
   ConnectivityWatcherStatus? internetStatus;
   final GlobalKey<NavigatorState> contextKey = GlobalKey<NavigatorState>();
 
+
+
+
   OverlayEntry? _entry;
 
   /// list of overlay entries to all the reference of overlays drawn
   List<OverlayEntry> _entries = [];
+  List<BuildContext> _overlayContext = [];
 
   /// Overlay state
   OverlayState? _overlayState;
@@ -20,16 +43,21 @@ class ConnectivityController with ChangeNotifier {
   /// Custom No Internet widget provided by the user
   CustomNoInternetWrapper? _userWidget;
   NoConnectivityStyle? _connectivityStyle;
+
+  
+
+  Widget? customNoInternetText;
   bool isAlertActive = false;
+  BuildContext? currentContext;
   InternetConnectionChecker checker = InternetConnectionChecker.createInstance(
       checkInterval: Duration(seconds: 2), checkTimeout: Duration(seconds: 2));
   setupConnectivityListner(
       {CustomNoInternetWrapper? offlineWidget,
       NoConnectivityStyle? connectivityStyle =
-          NoConnectivityStyle.SNACKBAR}) async {
+          NoConnectivityStyle.SNACKBAR, Widget? noInternetText }) async {
     _userWidget = offlineWidget;
     _connectivityStyle = connectivityStyle;
-
+customNoInternetText = noInternetText;
     if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
         _userWidget == null) {
       throw ("widgetForNoInternet is missing");
@@ -55,6 +83,11 @@ class ConnectivityController with ChangeNotifier {
     });
   }
 
+
+Future<bool> hideNoInternetScreen() async{
+return await  _removeNoInternet();
+  }
+
   isInternetBack({required Function(bool) internetStatus}) async {
     bool isConnected = await InternetConnectionChecker().hasConnection;
 
@@ -77,7 +110,12 @@ class ConnectivityController with ChangeNotifier {
           SizedBox(
             width: 20,
           ),
-          Text('No Internet'),
+          if(customNoInternetText == null)...[
+               Text('No Internet'),
+          ]
+          else...[
+            customNoInternetText ??  Text('No Internet'),
+          ]
         ],
       ),
       backgroundColor: Colors.black,
@@ -128,32 +166,58 @@ class ConnectivityController with ChangeNotifier {
   }
 
   /// Removes the No internet widget from the tree and clears overlay entry
-  _removeNoInternet() {
-    BuildContext currentContext = contextKey.currentContext!;
+ Future<bool> _removeNoInternet() async {
+
+    bool isNetworkBack = await getConnectivityStatus();
+
+    if(!isNetworkBack){
+      return false ;
+    }
+    currentContext = contextKey.currentContext;
+    if(_connectivityStyle == NoConnectivityStyle.CUSTOM && _overlayContext.isNotEmpty){
+     
+ currentContext = _overlayContext.last;
+      
+     
+    }
+    if(currentContext != null){
     if (_connectivityStyle == NoConnectivityStyle.SNACKBAR) {
       try {
-        ScaffoldMessenger.of(currentContext).removeCurrentSnackBar();
+        ScaffoldMessenger.of(currentContext!).removeCurrentSnackBar();
+        return true;
       } catch (e) {
         print("error");
+        return false;
+        
       }
     } else if (_connectivityStyle == NoConnectivityStyle.ALERT &&
         isAlertActive) {
-      Navigator.pop(currentContext);
+      Navigator.pop(currentContext!);
+        return true;
     } else {
       _entries.forEach((entry) => entry.remove());
       _entries.clear();
+      _overlayContext.clear();
+        return true;
+    }
+    }
+    else{
+      return false;
     }
   }
 
   /// Responsible for getting the current context from the tree and draw the  custom widget
   showNoInternet() {
-    BuildContext currentContext = contextKey.currentContext!;
+
+    currentContext = contextKey.currentContext;
+    if(currentContext != null){
     if (_connectivityStyle == NoConnectivityStyle.SNACKBAR) {
-      showSnackBar(currentContext);
+      showSnackBar(currentContext!);
     } else if (_connectivityStyle == NoConnectivityStyle.ALERT) {
       showPlatformAlert();
     } else {
       _entry = OverlayEntry(builder: (context) {
+        _overlayContext.add(context);
         return _userWidget ??
             Container(
               color: Colors.amber,
@@ -162,6 +226,7 @@ class ConnectivityController with ChangeNotifier {
       });
       _entries.add(_entry!);
       _overlayState?.insert(_entry!);
+    }
     }
   }
 
@@ -172,11 +237,14 @@ class ConnectivityController with ChangeNotifier {
   }
 
   showPlatformAlert() {
-    BuildContext currentContext = contextKey.currentContext!;
+  currentContext = contextKey.currentContext;
+    if(currentContext != null){
+
     if (Platform.isIOS) {
-      showCupertinoDialog(currentContext);
+      showCupertinoDialog(currentContext!);
     } else if (Platform.isAndroid) {
-      showMaterialDialog(currentContext);
+      showMaterialDialog(currentContext!);
+    }
     }
   }
 
@@ -187,7 +255,7 @@ class ConnectivityController with ChangeNotifier {
         isAlertActive = true;
         return CupertinoAlertDialog(
           title: Text('No Internet Connection'),
-          content: Text('Please check your internet connection and try again.'),
+          content: customNoInternetText ?? Text('Please check your internet connection and try again.'),
           actions: [
             CupertinoDialogAction(
               onPressed: () {
@@ -219,7 +287,7 @@ class ConnectivityController with ChangeNotifier {
         isAlertActive = true;
         return AlertDialog(
           title: Text('No Internet Connection'),
-          content: Text('Please check your internet connection and try again.'),
+          content: customNoInternetText ?? Text('Please check your internet connection and try again.'),
           actions: [
             TextButton(
               onPressed: () {
