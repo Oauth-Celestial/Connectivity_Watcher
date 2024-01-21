@@ -43,7 +43,8 @@ Wrap Your MaterialApp With ConnectionAwareApp and pass the connection style
 # Preview
 
 
-https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/0d6fccce-d4d7-442c-907b-4798d482db5d
+![snackbar](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/af375c80-1942-4410-b7ff-cf167c131f7f)
+
 
 
 
@@ -67,7 +68,8 @@ https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/0d6fccc
   }
 ```
 # Preview
-https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/156684ef-14c8-45f0-9deb-a0e658184bab
+
+![alert](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/7b50b018-d863-44e9-afb3-d627cdafd9a2)
 
 
 What if i have to use a custom screen which my designer provided for no internet 😅!
@@ -104,7 +106,8 @@ Widget build(BuildContext context) {
 
 # Preview
 
-https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/d784b345-f46b-4751-8779-f6f152637987
+![custom](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/b72c6bcc-d782-4bbf-93fe-a7b63f8ea818)
+
 
 
 ## Check Internet Status
