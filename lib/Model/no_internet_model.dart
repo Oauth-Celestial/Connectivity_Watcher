@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class NoInternetWidget {
   /// widget : -  your no interenet widget if not passed default is set
   Widget? widget;

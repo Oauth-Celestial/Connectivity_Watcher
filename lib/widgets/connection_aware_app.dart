@@ -19,8 +19,9 @@ class ConnectionAwareApp extends StatelessWidget {
   final NoConnectivityStyle? connectivityStyle;
 
   final ConnectionBuilder builder;
- ///
- final  Widget? noInternetText;
+
+  ///
+  final Widget? noInternetText;
 
   ConnectionAwareApp(
       {super.key,

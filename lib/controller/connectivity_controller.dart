@@ -6,30 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 
+class ConnectivityWatcher {
+  ConnectivityWatcher._();
 
-class ConnectivityWatcher{
+  static ConnectivityWatcher get instance => ConnectivityWatcher._();
 
-ConnectivityWatcher._();
+  Future<bool> hideNoInternet({required BuildContext currentContext}) async {
+    return await currentContext
+        .read<ConnectivityController>()
+        .hideNoInternetScreen();
+  }
 
-static ConnectivityWatcher get instance => ConnectivityWatcher._();
-
-Future<bool> hideNoInternet({ required BuildContext currentContext} ) async{
- return await currentContext.read<ConnectivityController>().hideNoInternetScreen();
+  Future<bool> getConnectivityStatus({required BuildContext currentContext}) {
+    return currentContext
+        .read<ConnectivityController>()
+        .getConnectivityStatus();
+  }
 }
-
-Future<bool> getConnectivityStatus({  required  BuildContext currentContext}){
-return currentContext.read<ConnectivityController>().getConnectivityStatus();
-}
-}
-
-
 
 class ConnectivityController with ChangeNotifier {
   ConnectivityWatcherStatus? internetStatus;
   final GlobalKey<NavigatorState> contextKey = GlobalKey<NavigatorState>();
-
-
-
 
   OverlayEntry? _entry;
 
@@ -44,8 +41,6 @@ class ConnectivityController with ChangeNotifier {
   CustomNoInternetWrapper? _userWidget;
   NoConnectivityStyle? _connectivityStyle;
 
-  
-
   Widget? customNoInternetText;
   bool isAlertActive = false;
   BuildContext? currentContext;
@@ -53,18 +48,22 @@ class ConnectivityController with ChangeNotifier {
       checkInterval: Duration(seconds: 2), checkTimeout: Duration(seconds: 2));
   setupConnectivityListner(
       {CustomNoInternetWrapper? offlineWidget,
-      NoConnectivityStyle? connectivityStyle =
-          NoConnectivityStyle.SNACKBAR, Widget? noInternetText }) async {
+      NoConnectivityStyle? connectivityStyle = NoConnectivityStyle.SNACKBAR,
+      Widget? noInternetText}) async {
     _userWidget = offlineWidget;
     _connectivityStyle = connectivityStyle;
-customNoInternetText = noInternetText;
+    customNoInternetText = noInternetText;
     if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
         _userWidget == null) {
       throw ("widgetForNoInternet is missing");
     }
 
     checker.onStatusChange.listen((status) {
-      _overlayState = (contextKey.currentState!.overlay);
+      if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
+          (contextKey.currentState?.overlay) != null) {
+        _overlayState = (contextKey.currentState!.overlay);
+      }
+
       switch (status) {
         /// ConnectedState
         case InternetConnectionStatus.connected:
@@ -83,9 +82,8 @@ customNoInternetText = noInternetText;
     });
   }
 
-
-Future<bool> hideNoInternetScreen() async{
-return await  _removeNoInternet();
+  Future<bool> hideNoInternetScreen() async {
+    return await _removeNoInternet();
   }
 
   isInternetBack({required Function(bool) internetStatus}) async {
@@ -110,11 +108,10 @@ return await  _removeNoInternet();
           SizedBox(
             width: 20,
           ),
-          if(customNoInternetText == null)...[
-               Text('No Internet'),
-          ]
-          else...[
-            customNoInternetText ??  Text('No Internet'),
+          if (customNoInternetText == null) ...[
+            Text('No Internet'),
+          ] else ...[
+            customNoInternetText ?? Text('No Internet'),
           ]
         ],
       ),
@@ -166,67 +163,61 @@ return await  _removeNoInternet();
   }
 
   /// Removes the No internet widget from the tree and clears overlay entry
- Future<bool> _removeNoInternet() async {
-
+  Future<bool> _removeNoInternet() async {
     bool isNetworkBack = await getConnectivityStatus();
 
-    if(!isNetworkBack){
-      return false ;
+    if (!isNetworkBack) {
+      return false;
     }
     currentContext = contextKey.currentContext;
-    if(_connectivityStyle == NoConnectivityStyle.CUSTOM && _overlayContext.isNotEmpty){
-     
- currentContext = _overlayContext.last;
-      
-     
+    if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
+        _overlayContext.isNotEmpty) {
+      currentContext = _overlayContext.last;
     }
-    if(currentContext != null){
-    if (_connectivityStyle == NoConnectivityStyle.SNACKBAR) {
-      try {
-        ScaffoldMessenger.of(currentContext!).removeCurrentSnackBar();
+    if (currentContext != null) {
+      if (_connectivityStyle == NoConnectivityStyle.SNACKBAR) {
+        try {
+          ScaffoldMessenger.of(currentContext!).removeCurrentSnackBar();
+          return true;
+        } catch (e) {
+          print("error");
+          return false;
+        }
+      } else if (_connectivityStyle == NoConnectivityStyle.ALERT &&
+          isAlertActive) {
+        Navigator.pop(currentContext!);
         return true;
-      } catch (e) {
-        print("error");
-        return false;
-        
+      } else {
+        _entries.forEach((entry) => entry.remove());
+        _entries.clear();
+        _overlayContext.clear();
+        return true;
       }
-    } else if (_connectivityStyle == NoConnectivityStyle.ALERT &&
-        isAlertActive) {
-      Navigator.pop(currentContext!);
-        return true;
     } else {
-      _entries.forEach((entry) => entry.remove());
-      _entries.clear();
-      _overlayContext.clear();
-        return true;
-    }
-    }
-    else{
       return false;
     }
   }
 
   /// Responsible for getting the current context from the tree and draw the  custom widget
   showNoInternet() {
-
     currentContext = contextKey.currentContext;
-    if(currentContext != null){
-    if (_connectivityStyle == NoConnectivityStyle.SNACKBAR) {
-      showSnackBar(currentContext!);
-    } else if (_connectivityStyle == NoConnectivityStyle.ALERT) {
-      showPlatformAlert();
-    } else {
-      _entry = OverlayEntry(builder: (context) {
-        _overlayContext.add(context);
-        return _userWidget ??
-            Container(
-              color: Colors.amber,
-              child: Text("No Internet"),
-            );
-      });
-      _entries.add(_entry!);
-      _overlayState?.insert(_entry!);
-    }
+    if (currentContext != null) {
+      if (_connectivityStyle == NoConnectivityStyle.SNACKBAR) {
+        showSnackBar(currentContext!);
+      } else if (_connectivityStyle == NoConnectivityStyle.ALERT) {
+        showPlatformAlert();
+      } else {
+        _entry = OverlayEntry(builder: (context) {
+          _overlayContext.add(context);
+          return _userWidget ??
+              Container(
+                color: Colors.amber,
+                child: Text("No Internet"),
+              );
+        });
+        _entries.add(_entry!);
+        _overlayState?.insert(_entry!);
+      }
     }
   }
 
@@ -237,14 +228,13 @@ return await  _removeNoInternet();
   }
 
   showPlatformAlert() {
-  currentContext = contextKey.currentContext;
-    if(currentContext != null){
-
-    if (Platform.isIOS) {
-      showCupertinoDialog(currentContext!);
-    } else if (Platform.isAndroid) {
-      showMaterialDialog(currentContext!);
-    }
+    currentContext = contextKey.currentContext;
+    if (currentContext != null) {
+      if (Platform.isIOS) {
+        showCupertinoDialog(currentContext!);
+      } else if (Platform.isAndroid) {
+        showMaterialDialog(currentContext!);
+      }
     }
   }
 
@@ -255,7 +245,8 @@ return await  _removeNoInternet();
         isAlertActive = true;
         return CupertinoAlertDialog(
           title: Text('No Internet Connection'),
-          content: customNoInternetText ?? Text('Please check your internet connection and try again.'),
+          content: customNoInternetText ??
+              Text('Please check your internet connection and try again.'),
           actions: [
             CupertinoDialogAction(
               onPressed: () {
@@ -287,7 +278,8 @@ return await  _removeNoInternet();
         isAlertActive = true;
         return AlertDialog(
           title: Text('No Internet Connection'),
-          content: customNoInternetText ?? Text('Please check your internet connection and try again.'),
+          content: customNoInternetText ??
+              Text('Please check your internet connection and try again.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -313,7 +305,6 @@ return await  _removeNoInternet();
   }
 }
 
-
-// To Do 
+// To Do
 
 // Image.asset("packages/connectivity_watcher/assets/a.jpg"),
