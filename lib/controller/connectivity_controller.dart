@@ -1,15 +1,22 @@
+import 'dart:async';
 import 'dart:io';
+
 import 'package:connectivity_watcher/utils/enums/enum_connection.dart';
 import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 
 class ConnectivityWatcher {
   ConnectivityWatcher._();
 
-  static ConnectivityWatcher get instance => ConnectivityWatcher._();
+  static ConnectivityWatcher get _instance => ConnectivityWatcher._();
+
+  factory ConnectivityWatcher() {
+    return _instance;
+  }
 
   Future<bool> hideNoInternet({required BuildContext currentContext}) async {
     return await currentContext
@@ -21,6 +28,15 @@ class ConnectivityWatcher {
     return currentContext
         .read<ConnectivityController>()
         .getConnectivityStatus();
+  }
+
+  Stream<ConnectivityWatcherStatus> subscribeToConnectivityChange({
+    required BuildContext currentContext,
+  }) {
+    return currentContext
+        .read<ConnectivityController>()
+        .connectivityController
+        .stream;
   }
 }
 
@@ -40,6 +56,9 @@ class ConnectivityController with ChangeNotifier {
   /// Custom No Internet widget provided by the user
   CustomNoInternetWrapper? _userWidget;
   NoConnectivityStyle? _connectivityStyle;
+
+  StreamController<ConnectivityWatcherStatus> connectivityController =
+      StreamController<ConnectivityWatcherStatus>.broadcast();
 
   Widget? customNoInternetText;
   bool isAlertActive = false;
@@ -69,12 +88,16 @@ class ConnectivityController with ChangeNotifier {
         case InternetConnectionStatus.connected:
           try {
             _removeNoInternet();
+            connectivityController.sink
+                .add(ConnectivityWatcherStatus.connected);
           } catch (e) {}
           print('You are Connected to the internet.');
           break;
 
         /// DisconnectedState
         case InternetConnectionStatus.disconnected:
+          connectivityController.sink
+              .add(ConnectivityWatcherStatus.disconnected);
           showNoInternet();
           print('You are disconnected from the internet.');
           break;

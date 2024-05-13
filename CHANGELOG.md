@@ -8,3 +8,5 @@
 * 1.0.1  Improved functionality and Refactored Code with addition features
 
 * 1.0.2  Fixed Overlay issue for custom style.
+
+* 1.0.3  Updated dependency and enhancement

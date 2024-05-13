@@ -1,55 +1,15 @@
 import 'dart:async';
 
-import 'package:connectivity_watcher/connectivity_watcher.dart';
 import 'package:connectivity_watcher/controller/connectivity_controller.dart';
-import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
-import 'package:example/login_two.dart';
-import 'package:example/no_internet.dart';
+import 'package:connectivity_watcher/utils/enums/enum_connection.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class LoginDemoTwo extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return ConnectionAwareApp(
-      /// connectivityStyle: NoConnectivityStyle.CUSTOM,
-      connectivityStyle: NoConnectivityStyle.CUSTOM,
-      noInternetText: Text(
-        "Testing message",
-        style: TextStyle(color: Colors.red),
-      ),
-
-      offlineWidget: CustomNoInternetWrapper(
-        builder: (context) {
-          return CustomNoInternet();
-        },
-      ),
-      // Place your custom no internet Widget
-      builder: (context, connectionKey) {
-        return MaterialApp(
-            navigatorKey: connectionKey,
-            debugShowCheckedModeBanner: false,
-            title: 'Connectivity_Watcher',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: LoginDemo());
-      },
-    );
-  }
+  _LoginDemoTwoState createState() => _LoginDemoTwoState();
 }
 
-class LoginDemo extends StatefulWidget {
-  @override
-  _LoginDemoState createState() => _LoginDemoState();
-}
-
-class _LoginDemoState extends State<LoginDemo> {
+class _LoginDemoTwoState extends State<LoginDemoTwo> {
   late StreamSubscription<ConnectivityWatcherStatus> subscription;
   @override
   void initState() {
@@ -60,7 +20,7 @@ class _LoginDemoState extends State<LoginDemo> {
       currentContext: context,
     )
         .listen((event) {
-      print("Conncetivity status in first screen ${event}");
+      print("Conncetivity status in second screen ${event}");
     });
   }
 
@@ -116,8 +76,9 @@ class _LoginDemoState extends State<LoginDemo> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: MaterialButton(
                 onPressed: () async {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => LoginDemoTwo()));
+                  bool hasInternet = await ConnectivityWatcher()
+                      .getConnectivityStatus(currentContext: context);
+                  print(hasInternet);
                 },
                 child: Text(
                   'Login',

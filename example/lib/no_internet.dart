@@ -75,7 +75,7 @@ class _CustomNoInternetState extends State<CustomNoInternet>
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: InkWell(
                   onTap: () async {
-                    bool hasRemoved = await ConnectivityWatcher.instance
+                    bool hasRemoved = await ConnectivityWatcher()
                         .hideNoInternet(currentContext: context);
                     if (hasRemoved) {
                     } else {
