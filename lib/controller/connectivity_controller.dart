@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:connectivity_watcher/utils/enums/enum_connection.dart';
+import 'package:connectivity_watcher/widgets/connection_aware_app.dart';
 import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:provider/provider.dart';
 
 class ConnectivityWatcher {
   ConnectivityWatcher._();
@@ -20,23 +18,30 @@ class ConnectivityWatcher {
 
   Future<bool> hideNoInternet({required BuildContext currentContext}) async {
     return await currentContext
-        .read<ConnectivityController>()
+        .dependOnInheritedWidgetOfExactType<ConnectivityInheritedWidget>()!
+        .controller!
         .hideNoInternetScreen();
   }
 
   Future<bool> getConnectivityStatus({required BuildContext currentContext}) {
     return currentContext
-        .read<ConnectivityController>()
+        .dependOnInheritedWidgetOfExactType<ConnectivityInheritedWidget>()!
+        .controller!
         .getConnectivityStatus();
   }
 
-  Stream<ConnectivityWatcherStatus> subscribeToConnectivityChange({
-    required BuildContext currentContext,
-  }) {
-    return currentContext
-        .read<ConnectivityController>()
-        .connectivityController
-        .stream;
+  subscribeToConnectivityChange(
+      {required BuildContext currentContext,
+      required Function(Stream<ConnectivityWatcherStatus> stream)
+          subscriptionCallback}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Stream<ConnectivityWatcherStatus> stream = currentContext
+          .dependOnInheritedWidgetOfExactType<ConnectivityInheritedWidget>()!
+          .controller!
+          .connectivityController
+          .stream;
+      subscriptionCallback(stream);
+    });
   }
 }
 

@@ -55,13 +55,14 @@ class _LoginDemoState extends State<LoginDemo> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    subscription = ConnectivityWatcher()
-        .subscribeToConnectivityChange(
-      currentContext: context,
-    )
-        .listen((event) {
-      print("Conncetivity status in first screen ${event}");
-    });
+    ConnectivityWatcher().subscribeToConnectivityChange(
+        currentContext: context,
+        subscriptionCallback: ((stream) {
+          subscription = stream.listen((event) {
+            print(
+                "Internet Status ${event == ConnectivityWatcherStatus.connected}");
+          });
+        }));
   }
 
   @override

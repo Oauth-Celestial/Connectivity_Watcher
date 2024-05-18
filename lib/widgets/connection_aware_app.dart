@@ -1,13 +1,27 @@
 import 'package:connectivity_watcher/controller/connectivity_controller.dart';
+import 'package:connectivity_watcher/network_check.dart';
 import 'package:connectivity_watcher/utils/enums/enum_connection.dart';
 import 'package:connectivity_watcher/watcher_barrel.dart';
 import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 /// Builder defination
 typedef ConnectionBuilder = Widget Function(
     BuildContext, GlobalKey<NavigatorState>);
+
+// ignore: must_be_immutable
+class ConnectivityInheritedWidget extends InheritedWidget {
+  ConnectivityInheritedWidget({
+    this.controller,
+    required Widget child,
+  }) : super(child: child);
+  ConnectivityController? controller;
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
+    return false;
+  }
+}
 
 class ConnectionAwareApp extends StatelessWidget {
   /// [app] will accept MaterialApp or CupertinoApp must be non-null
@@ -30,21 +44,22 @@ class ConnectionAwareApp extends StatelessWidget {
       this.offlineWidget,
       this.connectivityStyle = NoConnectivityStyle.SNACKBAR});
 
+// ConnectivityController()
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ConnectivityController(),
-      builder: (context, child) {
-        return Builder(builder: (context) {
-          Provider.of<ConnectivityController>(context, listen: false)
-              .setupConnectivityListner(
-                  offlineWidget: offlineWidget,
-                  noInternetText: noInternetText,
-                  connectivityStyle: connectivityStyle);
-          return builder(
-              context, context.read<ConnectivityController>().contextKey);
-        });
-      },
+    return ConnectivityInheritedWidget(
+      controller: ConnectivityController(),
+      child: Builder(builder: (context) {
+        ConnectivityController controller = context
+            .dependOnInheritedWidgetOfExactType<ConnectivityInheritedWidget>()!
+            .controller!;
+
+        controller.setupConnectivityListner(
+            offlineWidget: offlineWidget,
+            noInternetText: noInternetText,
+            connectivityStyle: connectivityStyle);
+        return builder(context, controller.contextKey);
+      }),
     );
   }
 }

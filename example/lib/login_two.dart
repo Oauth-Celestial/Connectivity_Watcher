@@ -15,13 +15,15 @@ class _LoginDemoTwoState extends State<LoginDemoTwo> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    subscription = ConnectivityWatcher()
-        .subscribeToConnectivityChange(
-      currentContext: context,
-    )
-        .listen((event) {
-      print("Conncetivity status in second screen ${event}");
-    });
+
+    ConnectivityWatcher().subscribeToConnectivityChange(
+        currentContext: context,
+        subscriptionCallback: ((stream) {
+          subscription = stream.listen((event) {
+            print(
+                "Internet Status ${event == ConnectivityWatcherStatus.connected}");
+          });
+        }));
   }
 
   @override
