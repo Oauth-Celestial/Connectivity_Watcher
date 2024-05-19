@@ -58,8 +58,11 @@ class _LoginDemoState extends State<LoginDemo> {
     ConnectivityWatcher().subscribeToConnectivityChange(
         subscriptionCallback: ((stream) {
       subscription = stream.listen((event) {
-        print(
-            "Internet Status on screen one  ${event == ConnectivityWatcherStatus.connected}");
+        if (event == ConnectivityWatcherStatus.connected) {
+          // Internet is Connected
+        } else {
+          // Internet is disconnected
+        }
       });
     }));
   }
