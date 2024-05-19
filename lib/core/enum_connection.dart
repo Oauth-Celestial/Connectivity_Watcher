@@ -1,3 +1,5 @@
+part of 'controller_service.dart';
+
 enum ConnectivityWatcherStatus {
   /// connected to internet
   connected,

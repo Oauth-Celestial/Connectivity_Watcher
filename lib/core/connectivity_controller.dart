@@ -1,53 +1,16 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:connectivity_watcher/utils/enums/enum_connection.dart';
-import 'package:connectivity_watcher/widgets/connection_aware_app.dart';
-import 'package:connectivity_watcher/widgets/custom_no_internet.dart';
+import 'package:connectivity_watcher/core/controller_service.dart';
+import 'package:connectivity_watcher/screens/custom_no_internet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
-class ConnectivityWatcher {
-  ConnectivityWatcher._();
-
-  static ConnectivityWatcher get _instance => ConnectivityWatcher._();
-
-  factory ConnectivityWatcher() {
-    return _instance;
-  }
-
-  Future<bool> hideNoInternet({required BuildContext currentContext}) async {
-    return await currentContext
-        .dependOnInheritedWidgetOfExactType<ConnectivityInheritedWidget>()!
-        .controller!
-        .hideNoInternetScreen();
-  }
-
-  Future<bool> getConnectivityStatus({required BuildContext currentContext}) {
-    return currentContext
-        .dependOnInheritedWidgetOfExactType<ConnectivityInheritedWidget>()!
-        .controller!
-        .getConnectivityStatus();
-  }
-
-  subscribeToConnectivityChange(
-      {required BuildContext currentContext,
-      required Function(Stream<ConnectivityWatcherStatus> stream)
-          subscriptionCallback}) {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      Stream<ConnectivityWatcherStatus> stream = currentContext
-          .dependOnInheritedWidgetOfExactType<ConnectivityInheritedWidget>()!
-          .controller!
-          .connectivityController
-          .stream;
-      subscriptionCallback(stream);
-    });
-  }
-}
-
 class ConnectivityController with ChangeNotifier {
   ConnectivityWatcherStatus? internetStatus;
-  final GlobalKey<NavigatorState> contextKey = GlobalKey<NavigatorState>();
+  GlobalKey<NavigatorState> _contextKey = GlobalKey<NavigatorState>();
+
+  GlobalKey<NavigatorState> get contextKey => _contextKey;
 
   OverlayEntry? _entry;
 
@@ -70,10 +33,16 @@ class ConnectivityController with ChangeNotifier {
   BuildContext? currentContext;
   InternetConnectionChecker checker = InternetConnectionChecker.createInstance(
       checkInterval: Duration(seconds: 2), checkTimeout: Duration(seconds: 2));
+
+  /// Initialize the connectivity wtacher with custom parameters
   setupConnectivityListner(
       {CustomNoInternetWrapper? offlineWidget,
+      GlobalKey<NavigatorState>? navigatorKey,
       NoConnectivityStyle? connectivityStyle = NoConnectivityStyle.SNACKBAR,
       Widget? noInternetText}) async {
+    if (navigatorKey != null) {
+      _contextKey = navigatorKey;
+    }
     _userWidget = offlineWidget;
     _connectivityStyle = connectivityStyle;
     customNoInternetText = noInternetText;
@@ -84,8 +53,8 @@ class ConnectivityController with ChangeNotifier {
 
     checker.onStatusChange.listen((status) {
       if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
-          (contextKey.currentState?.overlay) != null) {
-        _overlayState = (contextKey.currentState!.overlay);
+          (_contextKey.currentState?.overlay) != null) {
+        _overlayState = (_contextKey.currentState!.overlay);
       }
 
       switch (status) {
@@ -110,6 +79,7 @@ class ConnectivityController with ChangeNotifier {
     });
   }
 
+  /// removes the no internet screen when internet comes back
   Future<bool> hideNoInternetScreen() async {
     return await _removeNoInternet();
   }
@@ -125,6 +95,7 @@ class ConnectivityController with ChangeNotifier {
     }
   }
 
+  /// Shows Snackbar
   void showSnackBar(BuildContext context) {
     final snackBar = SnackBar(
       content: Row(
@@ -197,7 +168,7 @@ class ConnectivityController with ChangeNotifier {
     if (!isNetworkBack) {
       return false;
     }
-    currentContext = contextKey.currentContext;
+    currentContext = _contextKey.currentContext;
     if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
         _overlayContext.isNotEmpty) {
       currentContext = _overlayContext.last;
@@ -228,7 +199,7 @@ class ConnectivityController with ChangeNotifier {
 
   /// Responsible for getting the current context from the tree and draw the  custom widget
   showNoInternet() {
-    currentContext = contextKey.currentContext;
+    currentContext = _contextKey.currentContext;
     if (currentContext != null) {
       if (_connectivityStyle == NoConnectivityStyle.SNACKBAR) {
         showSnackBar(currentContext!);
@@ -256,7 +227,7 @@ class ConnectivityController with ChangeNotifier {
   }
 
   showPlatformAlert() {
-    currentContext = contextKey.currentContext;
+    currentContext = _contextKey.currentContext;
     if (currentContext != null) {
       if (Platform.isIOS) {
         showCupertinoDialog(currentContext!);
@@ -332,7 +303,3 @@ class ConnectivityController with ChangeNotifier {
     );
   }
 }
-
-// To Do
-
-// Image.asset("packages/connectivity_watcher/assets/a.jpg"),
