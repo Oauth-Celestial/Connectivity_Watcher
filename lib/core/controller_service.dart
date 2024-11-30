@@ -1,5 +1,6 @@
 import 'package:connectivity_watcher/core/connectivity_inherited.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 part 'enum_connection.dart';
 
 class ConnectivityWatcher {
@@ -49,5 +50,10 @@ class ConnectivityWatcher {
           .stream;
       subscriptionCallback(stream);
     });
+  }
+
+  makeApiCall({required Function(bool internetStatus) apiCall}) async {
+    bool status = await InternetConnectionChecker().hasConnection;
+    apiCall(status);
   }
 }

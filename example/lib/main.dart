@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:connectivity_watcher/connectivity_watcher.dart';
 import 'package:connectivity_watcher/screens/custom_no_internet.dart';
+import 'package:dio/dio.dart';
 import 'package:example/no_internet.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
     return ConnectivityWatcherWrapper(
       /// connectivityStyle: NoConnectivityStyle.CUSTOM,
       navigationKey: navigatorKey,
-      connectivityStyle: NoConnectivityStyle.CUSTOM,
+      connectivityStyle: NoConnectivityStyle.ALERT,
       noInternetText: Text(
         "Testing message",
         style: TextStyle(color: Colors.red),
@@ -55,16 +56,6 @@ class _LoginDemoState extends State<LoginDemo> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    ConnectivityWatcher().subscribeToConnectivityChange(
-        subscriptionCallback: ((stream) {
-      subscription = stream.listen((event) {
-        if (event == ConnectivityWatcherStatus.connected) {
-          // Internet is Connected
-        } else {
-          // Internet is disconnected
-        }
-      });
-    }));
   }
 
   @override
@@ -102,11 +93,7 @@ class _LoginDemoState extends State<LoginDemo> {
               ),
             ),
             MaterialButton(
-              onPressed: () async {
-                bool internetStatus =
-                    await ConnectivityWatcher().getConnectivityStatus();
-                print(internetStatus);
-              },
+              onPressed: () async {},
               child: Text(
                 'Forgot Password',
                 style: TextStyle(color: Colors.blue, fontSize: 15),
@@ -119,8 +106,24 @@ class _LoginDemoState extends State<LoginDemo> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: MaterialButton(
                 onPressed: () async {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => LoginDemoTwo()));
+                  ConnectivityWatcher().makeApiCall(apiCall: (status) async {
+                    if (status) {
+                      Dio dio = Dio();
+
+                      dio.interceptors.add(CurlInterceptor());
+
+                      Response data = await dio.post(
+                          "https://jsonplaceholder.typicode.com/posts",
+                          data: {
+                            "title": 'foo',
+                            "body": 'bar',
+                            "userId": 1,
+                          });
+                    }
+                  });
+
+                  // Navigator.of(context)
+                  //     .push(MaterialPageRoute(builder: (_) => LoginDemoTwo()));
                 },
                 child: Text(
                   'Login',

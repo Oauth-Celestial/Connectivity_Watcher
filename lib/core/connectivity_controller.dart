@@ -34,7 +34,6 @@ class ConnectivityController with ChangeNotifier {
   InternetConnectionChecker checker = InternetConnectionChecker.createInstance(
       checkInterval: Duration(seconds: 2), checkTimeout: Duration(seconds: 2));
 
-  /// Initialize the connectivity wtacher with custom parameters
   setupConnectivityListner(
       {CustomNoInternetWrapper? offlineWidget,
       GlobalKey<NavigatorState>? navigatorKey,
@@ -64,8 +63,10 @@ class ConnectivityController with ChangeNotifier {
             _removeNoInternet();
             connectivityController.sink
                 .add(ConnectivityWatcherStatus.connected);
-          } catch (e) {}
-          print('You are Connected to the internet.');
+          } catch (e) {
+            print(e);
+          }
+
           break;
 
         /// DisconnectedState
@@ -73,7 +74,6 @@ class ConnectivityController with ChangeNotifier {
           connectivityController.sink
               .add(ConnectivityWatcherStatus.disconnected);
           showNoInternet();
-          print('You are disconnected from the internet.');
           break;
       }
     });

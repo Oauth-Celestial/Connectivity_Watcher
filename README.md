@@ -2,9 +2,41 @@
 [![pub points](https://img.shields.io/pub/points/connectivity_watcher?color=2E8B57&label=pub%20points)](https://pub.dev/packages/connectivity_watcher/score)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
+# connectivity_watcher
 
-# connectivity_watcher 
+### 🚀 What's New
 
+1. **Curl Inteceptor for dio**
+
+    Now you can get curl for your api request inside your console with dio
+
+    ```dart
+   Dio dio = Dio();
+   dio.interceptors.add(CurlInterceptor());
+    ```
+
+2. **Api call with internet status**
+
+    Execute API tasks seamlessly by verifying internet connectivity beforehand.
+
+      ```dart
+      ConnectivityWatcher().makeApiCall(
+        apiCall: (internetStatus) async {
+          if (internetStatus) {
+            Dio dio = Dio();
+
+            Response data = await dio.post(
+              "https://jsonplaceholder.typicode.com/posts",
+              data: {
+                "title": 'foo',
+                "body": 'bar',
+                "userId": 1,
+              },
+            );
+          }
+        },
+      );
+      ```
 
 ### Table of contents
 
@@ -14,16 +46,18 @@
   - [Usage 🚀](#usage-🚀)
     - [Run Apis on internet status changes](#run-apis-on-internet-status-changes )
     - [The Custom method](#the-custom-method)
-    - [The Inbuild Styles ](#the-inbuild-styles )
+    - [The Inbuild Styles](#the-inbuild-styles )
   - [Honoring Recent Contributors](#honoring-recent-contributors)
   - [Features and bugs](#features-and-bugs)
 
 Honoring Recent Contributors
+
 # Description
+
 Connectivity Watcher is a robust Flutter package designed to monitor internet connectivity and network availability status in real-time. This ensures that your app can effectively manage and respond to changes in connectivity, providing a seamless user experience.
 
-
 ## Getting started
+
 First, add connectivity_watcher as a dependency in your pubspec.yaml file
 
 ```yaml
@@ -43,7 +77,7 @@ import 'package:connectivity_watcher/connectivity_watcher.dart';
 
 What if i have to use a custom screen which my designer provided for no internet 😅!
 
-## Run Apis on internet status changes 
+## Run Apis on internet status changes
 
 If your are in situation where you have to perform certain operation based on the internet status changes you can use **ConnectivityWatcher().subscribeToConnectivityChange()**
 
@@ -103,7 +137,8 @@ Widget build(BuildContext context) {
   }
 ```
 
-**Note:** The package will automatically remove the custom widget if internet is back but in case its not removed you can use the follwing method to remove it 
+**Note:** The package will automatically remove the custom widget if internet is back but in case its not removed you can use the follwing method to remove it
+
 ```
 bool hasRemoved = await   ConnectivityWatcher.().hideNoInternet();
 if(hasRemoved){
@@ -118,8 +153,7 @@ if(hasRemoved){
 
 ![custom](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/b72c6bcc-d782-4bbf-93fe-a7b63f8ea818)
 
-
-### The Inbuild Styles 
+### The Inbuild Styles
 
 Wrap Your MaterialApp With ConnectivityWatcherWrapper and pass the connection style
 
@@ -147,7 +181,7 @@ Wrap Your MaterialApp With ConnectivityWatcherWrapper and pass the connection st
 
 ![snackbar](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/af375c80-1942-4410-b7ff-cf167c131f7f)
 
-2. Alert 
+2. Alert
 
 ``` dart
   Widget build(BuildContext context) {
@@ -166,10 +200,10 @@ Wrap Your MaterialApp With ConnectivityWatcherWrapper and pass the connection st
     );
   }
 ```
+
 # Preview
 
 ![alert](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/7b50b018-d863-44e9-afb3-d627cdafd9a2)
-
 
 ## Check Internet Status
 
@@ -181,12 +215,11 @@ bool hasInternet = await ConnectivityWatcher().getConnectivityStatus();
 
 Feel free to contribute and open pull requests. 🙌
 
-
 ## Honoring Recent Contributors
 
 [<img src="https://github.com/avnp16.png" width="60px;"/><br /></a></sub>](https://github.com/avnp16)
 
-The section honors the people who has either contributed to the repo or have opened a  feature or bug request 
+The section honors the people who has either contributed to the repo or have opened a  feature or bug request
 
 ## Features and bugs
 

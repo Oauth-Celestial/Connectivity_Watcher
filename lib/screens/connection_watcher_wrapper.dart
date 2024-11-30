@@ -33,7 +33,6 @@ class ConnectivityWatcherWrapper extends StatelessWidget {
       this.offlineWidget,
       this.connectivityStyle = NoConnectivityStyle.SNACKBAR});
 
-// ConnectivityController()
   @override
   Widget build(BuildContext context) {
     return ConnectivityInheritedWidget(
