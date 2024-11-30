@@ -4,6 +4,25 @@
 
 # connectivity_watcher
 
+Connectivity Watcher is a robust Flutter package designed to monitor internet connectivity and network availability status in real-time. This ensures that your app can effectively manage and respond to changes in connectivity, providing a seamless user experience.
+
+## Getting started
+
+First, add connectivity_watcher as a dependency in your pubspec.yaml file
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  connectivity_watcher: ^[version]
+```
+
+## Import the package
+
+```dart
+import 'package:connectivity_watcher/connectivity_watcher.dart';
+```
+
 ### 🚀 What's New
 
 1. **Curl Inteceptor for dio**
@@ -37,41 +56,6 @@
         },
       );
       ```
-
-### Table of contents
-
-- [🌐📲 Connectivity Watcher](#connectivity_watcher)
-  - [Description](#description)
-  - [Getting started](#getting-started)
-  - [Usage 🚀](#usage-🚀)
-    - [Run Apis on internet status changes](#run-apis-on-internet-status-changes )
-    - [The Custom method](#the-custom-method)
-    - [The Inbuild Styles](#the-inbuild-styles )
-  - [Honoring Recent Contributors](#honoring-recent-contributors)
-  - [Features and bugs](#features-and-bugs)
-
-Honoring Recent Contributors
-
-# Description
-
-Connectivity Watcher is a robust Flutter package designed to monitor internet connectivity and network availability status in real-time. This ensures that your app can effectively manage and respond to changes in connectivity, providing a seamless user experience.
-
-## Getting started
-
-First, add connectivity_watcher as a dependency in your pubspec.yaml file
-
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  connectivity_watcher: ^[version]
-```
-
-## Import the package
-
-```dart
-import 'package:connectivity_watcher/connectivity_watcher.dart';
-```
 
 ## Usage 🚀
 
@@ -210,16 +194,6 @@ Wrap Your MaterialApp With ConnectivityWatcherWrapper and pass the connection st
 ```
 bool hasInternet = await ConnectivityWatcher().getConnectivityStatus();
 ```
-
-## Contribution 🤝
-
-Feel free to contribute and open pull requests. 🙌
-
-## Honoring Recent Contributors
-
-[<img src="https://github.com/avnp16.png" width="60px;"/><br /></a></sub>](https://github.com/avnp16)
-
-The section honors the people who has either contributed to the repo or have opened a  feature or bug request
 
 ## Features and bugs
 

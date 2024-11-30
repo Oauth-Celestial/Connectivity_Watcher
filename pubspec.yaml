@@ -23,7 +23,7 @@ flutter:
     - assets/
 screenshots:
   - description: Connectivity Watcher
-    path: assets/watcher.jpg
+    path: assets/connection.png
 platforms:
   android:
   ios:
