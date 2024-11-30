@@ -4,6 +4,25 @@
 
 # connectivity_watcher
 
+Connectivity Watcher is a robust Flutter package designed to monitor internet connectivity and network availability status in real-time. This ensures that your app can effectively manage and respond to changes in connectivity, providing a seamless user experience.
+
+## Getting started
+
+First, add connectivity_watcher as a dependency in your pubspec.yaml file
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  connectivity_watcher: ^[version]
+```
+
+## Import the package
+
+```dart
+import 'package:connectivity_watcher/connectivity_watcher.dart';
+```
+
 ### 🚀 What's New
 
 1. **Curl Inteceptor for dio**
@@ -38,70 +57,9 @@
       );
       ```
 
-### Table of contents
-
-- [🌐📲 Connectivity Watcher](#connectivity_watcher)
-  - [Description](#description)
-  - [Getting started](#getting-started)
-  - [Usage 🚀](#usage-🚀)
-    - [Run Apis on internet status changes](#run-apis-on-internet-status-changes )
-    - [The Custom method](#the-custom-method)
-    - [The Inbuild Styles](#the-inbuild-styles )
-  - [Honoring Recent Contributors](#honoring-recent-contributors)
-  - [Features and bugs](#features-and-bugs)
-
-Honoring Recent Contributors
-
-# Description
-
-Connectivity Watcher is a robust Flutter package designed to monitor internet connectivity and network availability status in real-time. This ensures that your app can effectively manage and respond to changes in connectivity, providing a seamless user experience.
-
-## Getting started
-
-First, add connectivity_watcher as a dependency in your pubspec.yaml file
-
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  connectivity_watcher: ^[version]
-```
-
-## Import the package
-
-```dart
-import 'package:connectivity_watcher/connectivity_watcher.dart';
-```
-
 ## Usage 🚀
 
 What if i have to use a custom screen which my designer provided for no internet 😅!
-
-## Run Apis on internet status changes
-
-If your are in situation where you have to perform certain operation based on the internet status changes you can use **ConnectivityWatcher().subscribeToConnectivityChange()**
-
-```dart
-// create a variable to store steam subscription
-late StreamSubscription<ConnectivityWatcherStatus> subscription;
-
-// Just like any other stream you can use the listen method and initialize stream in init state 
-@override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    ConnectivityWatcher().subscribeToConnectivityChange(
-        subscriptionCallback: ((stream) {
-      subscription = stream.listen((event) {
-        if (event == ConnectivityWatcherStatus.connected) {
-          // Internet is Connected
-        } else {
-          // Internet is disconnected
-        }
-      });
-    }));
-  }
-```
 
 ### The Custom method
 
@@ -211,15 +169,31 @@ Wrap Your MaterialApp With ConnectivityWatcherWrapper and pass the connection st
 bool hasInternet = await ConnectivityWatcher().getConnectivityStatus();
 ```
 
-## Contribution 🤝
+## Run Apis on internet status changes
 
-Feel free to contribute and open pull requests. 🙌
+If your are in situation where you have to perform certain operation based on the internet status changes you can use **ConnectivityWatcher().subscribeToConnectivityChange()**
 
-## Honoring Recent Contributors
+```dart
+// create a variable to store steam subscription
+late StreamSubscription<ConnectivityWatcherStatus> subscription;
 
-[<img src="https://github.com/avnp16.png" width="60px;"/><br /></a></sub>](https://github.com/avnp16)
-
-The section honors the people who has either contributed to the repo or have opened a  feature or bug request
+// Just like any other stream you can use the listen method and initialize stream in init state 
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    ConnectivityWatcher().subscribeToConnectivityChange(
+        subscriptionCallback: ((stream) {
+      subscription = stream.listen((event) {
+        if (event == ConnectivityWatcherStatus.connected) {
+          // Internet is Connected
+        } else {
+          // Internet is disconnected
+        }
+      });
+    }));
+  }
+```
 
 ## Features and bugs
 
