@@ -16,13 +16,41 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConnectivityWatcherWrapper(
+    return ZoConnectivityWrapper(
       /// connectivityStyle: NoConnectivityStyle.CUSTOM,
       navigationKey: navigatorKey,
-      connectivityStyle: NoConnectivityStyle.ALERT,
-      noInternetText: Text(
-        "Testing message",
-        style: TextStyle(color: Colors.red),
+      connectivityStyle: NoConnectivityStyle.CUSTOMALERT,
+      customAlert: AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        title: Row(
+          children: [
+            Icon(
+              Icons.wifi_off,
+              color: Colors.redAccent,
+            ),
+            SizedBox(width: 8.0),
+            Text(
+              'No Internet Connection',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Text(
+          'It looks like you are not connected to the internet. Please check your connection and try again.',
+          style: TextStyle(fontSize: 16.0),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('CANCEL', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text('RETRY'),
+          ),
+        ],
       ),
 
       offlineWidget: CustomNoInternetWrapper(
@@ -51,7 +79,6 @@ class LoginDemo extends StatefulWidget {
 }
 
 class _LoginDemoState extends State<LoginDemo> {
-  late StreamSubscription<ConnectivityWatcherStatus> subscription;
   @override
   void initState() {
     // TODO: implement initState
@@ -106,7 +133,7 @@ class _LoginDemoState extends State<LoginDemo> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: MaterialButton(
                 onPressed: () async {
-                  ConnectivityWatcher().makeApiCall(apiCall: (status) async {
+                  ZoConnectivityWatcher().makeApiCall(apiCall: (status) async {
                     if (status) {
                       Dio dio = Dio();
 
@@ -144,7 +171,7 @@ class _LoginDemoState extends State<LoginDemo> {
   @override
   void dispose() {
     // TODO: implement dispose
-    subscription.cancel();
+
     super.dispose();
   }
 }
@@ -161,7 +188,7 @@ class _LoginDemoTwoState extends State<LoginDemoTwo> {
     // TODO: implement initState
     super.initState();
 
-    ConnectivityWatcher().subscribeToConnectivityChange(
+    ZoConnectivityWatcher().subscribeToConnectivityChange(
         subscriptionCallback: ((stream) {
       subscription = stream.listen((event) {
         print(
@@ -207,7 +234,7 @@ class _LoginDemoTwoState extends State<LoginDemoTwo> {
             MaterialButton(
               onPressed: () async {
                 bool internetStatus =
-                    await ConnectivityWatcher().getConnectivityStatus();
+                    await ZoConnectivityWatcher().getConnectivityStatus();
                 print(internetStatus);
               },
               child: Text(
@@ -223,7 +250,7 @@ class _LoginDemoTwoState extends State<LoginDemoTwo> {
               child: MaterialButton(
                 onPressed: () async {
                   bool hasInternet =
-                      await ConnectivityWatcher().getConnectivityStatus();
+                      await ZoConnectivityWatcher().getConnectivityStatus();
                   print(hasInternet);
                 },
                 child: Text(

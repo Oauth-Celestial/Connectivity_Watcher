@@ -76,7 +76,7 @@ class _CustomNoInternetState extends State<CustomNoInternet>
                 child: InkWell(
                   onTap: () async {
                     bool hasRemoved =
-                        await ConnectivityWatcher().hideNoInternet();
+                        await ZoConnectivityWatcher().hideNoInternet();
                     if (hasRemoved) {
                     } else {
                       print("No Internet");
