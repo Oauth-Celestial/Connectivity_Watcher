@@ -1,16 +1,17 @@
-import 'package:connectivity_watcher/core/connectivity_controller.dart';
+import 'package:connectivity_watcher/connectivity_watcher.dart';
+
 import 'package:flutter/material.dart';
 
 typedef ConnectionBuilder = Widget Function(
     BuildContext, GlobalKey<NavigatorState>);
 
 // ignore: must_be_immutable
-class ConnectivityInheritedWidget extends InheritedWidget {
-  ConnectivityInheritedWidget({
+class ZoConnectivityInheritedWidget extends InheritedWidget {
+  ZoConnectivityInheritedWidget({
     this.controller,
     required Widget child,
   }) : super(child: child);
-  ConnectivityController? controller;
+  ZoConnectivityController? controller;
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {

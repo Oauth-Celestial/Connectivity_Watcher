@@ -1,6 +1,6 @@
 name: connectivity_watcher
 description: A Flutter package to check your internet connectivity with subsecond response times, even on mobile networks!.
-version: 2.0.1
+version: 3.0.0
 repository: "https://github.com/Oauth-Celestial/Connectivity_Watcher.git"
 
 environment:
@@ -27,3 +27,5 @@ screenshots:
 platforms:
   android:
   ios:
+  macos:
+  windows:

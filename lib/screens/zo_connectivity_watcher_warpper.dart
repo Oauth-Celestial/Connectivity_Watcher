@@ -1,15 +1,13 @@
-import 'package:connectivity_watcher/core/connectivity_controller.dart';
+import 'package:connectivity_watcher/controller/zo_connectivity_controller.dart';
 import 'package:connectivity_watcher/core/connectivity_inherited.dart';
-import 'package:connectivity_watcher/core/controller_service.dart';
+import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_service.dart';
 import 'package:connectivity_watcher/screens/custom_no_internet.dart';
 import 'package:flutter/material.dart';
 
 /// Builder defination
 
 // ignore: must_be_immutable
-class ConnectivityWatcherWrapper extends StatelessWidget {
-  /// [app] will accept MaterialApp or CupertinoApp must be non-null
-
+class ZoConnectivityWrapper extends StatelessWidget {
   /// No internet widget thats to be shown
   final CustomNoInternetWrapper? offlineWidget;
 
@@ -18,35 +16,35 @@ class ConnectivityWatcherWrapper extends StatelessWidget {
 
   final ConnectionBuilder builder;
 
-  /// Pass Nointernet widget
-  final Widget? noInternetText;
-
   /// If you already have the navigator key you can pass it here if not passed
   /// the package will assign its own key
   GlobalKey<NavigatorState>? navigationKey;
 
-  ConnectivityWatcherWrapper(
+  Widget? customAlert;
+
+  ZoConnectivityWrapper(
       {super.key,
       required this.builder,
       this.navigationKey,
-      this.noInternetText,
       this.offlineWidget,
+      this.customAlert,
       this.connectivityStyle = NoConnectivityStyle.SNACKBAR});
 
   @override
   Widget build(BuildContext context) {
-    return ConnectivityInheritedWidget(
-      controller: ConnectivityController(),
+    return ZoConnectivityInheritedWidget(
+      controller: ZoConnectivityController(),
       child: Builder(builder: (context) {
-        ConnectivityController controller = context
-            .dependOnInheritedWidgetOfExactType<ConnectivityInheritedWidget>()!
+        ZoConnectivityController controller = context
+            .dependOnInheritedWidgetOfExactType<
+                ZoConnectivityInheritedWidget>()!
             .controller!;
         controller.setupConnectivityListner(
             offlineWidget: offlineWidget,
-            noInternetText: noInternetText,
             navigatorKey: navigationKey,
+            customAlert: customAlert,
             connectivityStyle: connectivityStyle);
-        ConnectivityWatcher().setNavigatorKey(controller.contextKey);
+        ZoConnectivityWatcher().setNavigatorKey(controller.contextKey);
         return builder(context, controller.contextKey);
       }),
     );

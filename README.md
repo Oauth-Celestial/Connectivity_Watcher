@@ -1,14 +1,14 @@
+# connectivity_watcher
+
 [![pub package](https://img.shields.io/pub/v/connectivity_watcher.svg)](https://pub.dev/packages/connectivity_watcher)
 [![pub points](https://img.shields.io/pub/points/connectivity_watcher?color=2E8B57&label=pub%20points)](https://pub.dev/packages/connectivity_watcher/score)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
-# connectivity_watcher
-
-Connectivity Watcher is a robust Flutter package designed to monitor internet connectivity and network availability status in real-time. This ensures that your app can effectively manage and respond to changes in connectivity, providing a seamless user experience.
+**Connectivity Watcher** is a robust Flutter package designed to monitor internet connectivity and network availability status in real-time. This ensures that your app can effectively manage and respond to changes in connectivity, providing a seamless user experience.
 
 ## Getting started
 
-First, add connectivity_watcher as a dependency in your pubspec.yaml file
+First, add `connectivity_watcher` as a dependency in your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
@@ -23,178 +23,203 @@ dependencies:
 import 'package:connectivity_watcher/connectivity_watcher.dart';
 ```
 
-### 🚀 What's New
+## 🚀 What's New
 
-1. **Curl Inteceptor for dio**
+### 1. Renamed Classes
 
-    Now you can get curl for your api request inside your console with dio
+- `ConnectivityWatcherWrapper` is now `ZoConnectivityWrapper`.
+- `ConnectivityWatcher` is now `ZoConnectivityWatcher`.
 
-    ```dart
-   Dio dio = Dio();
-   dio.interceptors.add(CurlInterceptor());
-    ```
+### 2. New NoConnectivity Styles
 
-2. **Api call with internet status**
+- **`CUSTOMALERT`**: Add your custom alert dialogs, and the package handles showing and hiding them.
+- **`NONE`**: Manage widgets based on internet connectivity at the widget level instead of globally.
 
-    Execute API tasks seamlessly by verifying internet connectivity beforehand.
+### 3. Curl Interceptor for Dio
 
-      ```dart
-      ConnectivityWatcher().makeApiCall(
-        apiCall: (internetStatus) async {
-          if (internetStatus) {
-            Dio dio = Dio();
+Log API requests as curl commands in the console:
 
-            Response data = await dio.post(
-              "https://jsonplaceholder.typicode.com/posts",
-              data: {
-                "title": 'foo',
-                "body": 'bar',
-                "userId": 1,
-              },
-            );
-          }
+```dart
+Dio dio = Dio();
+dio.interceptors.add(CurlInterceptor());
+```
+
+### 4. `ZoNetworkAware` Widget
+
+Handle network-aware functionality in your app. Example:
+
+```dart
+ZoNetworkAware(
+  builder: (context, status) {
+    if (status == ConnectivityWatcherStatus.connected) {
+      return Container(
+        height: 50,
+        width: 250,
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: MaterialButton(
+          onPressed: () async {},
+          child: Text(
+            'Login',
+            style: TextStyle(color: Colors.black, fontSize: 25),
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        height: 50,
+        width: 250,
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: MaterialButton(
+          onPressed: () async {},
+          child: Text(
+            'Disconnected',
+            style: TextStyle(color: Colors.black, fontSize: 25),
+          ),
+        ),
+      );
+    }
+  },
+);
+```
+
+### 5. API Call with Internet Status
+
+Execute API tasks seamlessly by verifying internet connectivity beforehand:
+
+```dart
+ZoConnectivityWatcher().makeApiCall(
+  apiCall: (internetStatus) async {
+    if (internetStatus) {
+      Dio dio = Dio();
+      Response data = await dio.post(
+        "https://jsonplaceholder.typicode.com/posts",
+        data: {
+          "title": 'foo',
+          "body": 'bar',
+          "userId": 1,
         },
       );
-      ```
+    }
+  },
+);
+```
 
 ## Usage 🚀
 
-What if i have to use a custom screen which my designer provided for no internet 😅!
+### Custom No Internet Screen
 
-### The Custom method
-
-Wrap Your MaterialApp With ConnectivityWatcherWrapper and pass the connection style as custom and then pass your custom widget to offline widget as show thats it.
+Wrap your `MaterialApp` with `ConnectivityWatcherWrapper`, set `connectivityStyle` to `CUSTOM`, and provide a custom widget:
 
 ```dart
 Widget build(BuildContext context) {
-    return ConnectivityWatcherWrapper(
-      navigationKey: navigatorKey,
-      connectivityStyle: NoConnectivityStyle.CUSTOM,
-      noInternetText: Text(
-        "Testing message", // Any Message 
-        style: TextStyle(color: Colors.red),
-      ),
-
-      offlineWidget: CustomNoInternetWrapper(
-        builder: (context) {
-          return CustomNoInternet();
-        },
-      ),
-      // Place your custom no internet Widget
-      builder: (context, connectionKey) {
-        return MaterialApp(
-            navigatorKey: navigatorKey,
-            debugShowCheckedModeBanner: false,
-            title: 'Connectivity_Watcher',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: LoginDemo());
+  return ConnectivityWatcherWrapper(
+    navigationKey: navigatorKey,
+    connectivityStyle: NoConnectivityStyle.CUSTOM,
+    noInternetText: Text(
+      "Testing message",
+      style: TextStyle(color: Colors.red),
+    ),
+    offlineWidget: CustomNoInternetWrapper(
+      builder: (context) {
+        return CustomNoInternet();
       },
-    );
-  }
+    ),
+    builder: (context, connectionKey) {
+      return MaterialApp(
+        navigatorKey: navigatorKey,
+        debugShowCheckedModeBanner: false,
+        title: 'Connectivity_Watcher',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: LoginDemo(),
+      );
+    },
+  );
+}
 ```
 
-**Note:** The package will automatically remove the custom widget if internet is back but in case its not removed you can use the follwing method to remove it
+**Note:** The package will automatically remove the custom widget when the internet is back. If not, use the following method:
 
-```
-bool hasRemoved = await   ConnectivityWatcher.().hideNoInternet();
-if(hasRemoved){
- // your code after internet is back
-    }
-    else{
-       print("No Internet");
-    }
+```dart
+bool hasRemoved = await ZoConnectivityWatcher().hideNoInternet();
+if (hasRemoved) {
+  // Your code after internet is back
+} else {
+  print("No Internet");
+}
 ```
 
-# Preview
+### Built-in Styles
+
+#### SnackBar Style
+
+```dart
+Widget build(BuildContext context) {
+  return ConnectivityWatcherWrapper(
+    connectivityStyle: NoConnectivityStyle.SNACKBAR,
+    builder: (context, connectionKey) {
+      return MaterialApp(
+        navigatorKey: connectionKey,
+        debugShowCheckedModeBanner: false,
+        title: 'Connectivity_Watcher',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: LoginDemo(),
+      );
+    },
+  );
+}
+```
+
+#### Alert Style
+
+```dart
+Widget build(BuildContext context) {
+  return ConnectivityWatcherWrapper(
+    connectivityStyle: NoConnectivityStyle.ALERT,
+    builder: (context, connectionKey) {
+      return MaterialApp(
+        navigatorKey: connectionKey,
+        debugShowCheckedModeBanner: false,
+        title: 'Connectivity_Watcher',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: LoginDemo(),
+      );
+    },
+  );
+}
+```
+
+## Preview
+
+### Custom
 
 ![custom](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/b72c6bcc-d782-4bbf-93fe-a7b63f8ea818)
 
-### The Inbuild Styles
-
-Wrap Your MaterialApp With ConnectivityWatcherWrapper and pass the connection style
-
-1. SnackBar Style
-
-``` dart
-  Widget build(BuildContext context) {
-    return ConnectivityWatcherWrapper(
-      connectivityStyle: NoConnectivityStyle.SNACKBAR,
-      builder: (context, connectionKey) {
-        return MaterialApp(
-            navigatorKey: connectionKey, // add this key to material app 
-            debugShowCheckedModeBanner: false,
-            title: 'Connectivity_Watcher',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: LoginDemo());
-      },
-    );
-  }
-```
-
-# Preview
+### SnackBar
 
 ![snackbar](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/af375c80-1942-4410-b7ff-cf167c131f7f)
 
-2. Alert
-
-``` dart
-  Widget build(BuildContext context) {
-    return ConnectivityWatcherWrapper(
-     connectivityStyle: NoConnectivityStyle.ALERT,
-      builder: (context, connectionKey) {
-        return MaterialApp(
-            navigatorKey: connectionKey, // add this key to material app 
-            debugShowCheckedModeBanner: false,
-            title: 'Connectivity_Watcher',
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-            ),
-            home: LoginDemo());
-      },
-    );
-  }
-```
-
-# Preview
+### Alert
 
 ![alert](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/7b50b018-d863-44e9-afb3-d627cdafd9a2)
 
 ## Check Internet Status
 
-```
-bool hasInternet = await ConnectivityWatcher().getConnectivityStatus();
-```
-
-## Run Apis on internet status changes
-
-If your are in situation where you have to perform certain operation based on the internet status changes you can use **ConnectivityWatcher().subscribeToConnectivityChange()**
-
 ```dart
-// create a variable to store steam subscription
-late StreamSubscription<ConnectivityWatcherStatus> subscription;
-
-// Just like any other stream you can use the listen method and initialize stream in init state 
-@override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    ConnectivityWatcher().subscribeToConnectivityChange(
-        subscriptionCallback: ((stream) {
-      subscription = stream.listen((event) {
-        if (event == ConnectivityWatcherStatus.connected) {
-          // Internet is Connected
-        } else {
-          // Internet is disconnected
-        }
-      });
-    }));
-  }
+bool hasInternet = await ZoConnectivityWatcher().isInternetAvailable;
 ```
 
-## Features and bugs
+## Features and Bugs
 
-Feel free to post a feature requests or report a bug [here](https://github.com/Oauth-Celestial/Connectivity_Watcher/issues).
+Feel free to post feature requests or report bugs [here](https://github.com/Oauth-Celestial/Connectivity_Watcher/issues).
