@@ -1,5 +1,23 @@
 ## Release
 
+## 3.0.1
+
+### ⚠️ BREAKING CHANGE
+
+This is a major release which contains breaking API changes.
+
+ 1. `ConnectivityWatcherWrapper` is now `ZoConnectivityWrapper`
+
+ 2. `ConnectivityWatcher` is now `ZoConnectivityWatcher`
+
+Added new styles for noconnectivity and updated code for latest flutter
+
+### 🐛 Bug Fixes
+
+* Resolved black screen issue with alert style
+
+* Minor bug fixes and improvements
+
 ## 2.0.1
 
 ### 🚀 What's New
