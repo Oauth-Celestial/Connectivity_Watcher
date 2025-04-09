@@ -44,12 +44,12 @@ Dio dio = Dio();
 dio.interceptors.add(CurlInterceptor());
 ```
 
-### 4. `ZoNetworkAware` Widget
+### 4. `ZoNetworkAwareWidget`
 
 Handle network-aware functionality in your app. Example:
 
 ```dart
-ZoNetworkAware(
+ZoNetworkAwareWidget(
   builder: (context, status) {
     if (status == ConnectivityWatcherStatus.connected) {
       return Container(

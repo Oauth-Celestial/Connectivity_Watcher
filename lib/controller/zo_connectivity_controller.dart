@@ -235,20 +235,28 @@ class ZoConnectivityController {
     currentContext = _contextKey.currentContext;
     if (currentContext != null) {
       isAlertActive = true;
-      showNativeDialogue(currentContext!, () {
-        isInternetBack(internetStatus: (status) {
-          if (status) {
-            isAlertActive = false;
-            Navigator.pop(currentContext!);
-          } else {
-            Navigator.pop(currentContext!);
+      showNativeDialogue(
+        currentContext!,
+        () {
+          isInternetBack(
+            internetStatus: (status) {
+              if (status) {
+                isAlertActive = false;
+                Navigator.pop(currentContext!);
+              } else {
+                Navigator.pop(currentContext!);
 
-            Future.delayed(Duration(seconds: 1), () {
-              showPlatformAlert();
-            });
-          }
-        });
-      });
+                Future.delayed(
+                  Duration(seconds: 1),
+                  () {
+                    showPlatformAlert();
+                  },
+                );
+              }
+            },
+          );
+        },
+      );
     }
   }
 }

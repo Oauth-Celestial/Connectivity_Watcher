@@ -6,7 +6,14 @@ class CurlInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final curlCommand = _generateCurlCommand(options);
-    print("Curl Command   -- >$curlCommand");
+
+    Map<String, dynamic> result = {
+      "url": options.uri.toString(),
+      "method": options.method,
+      "curlCommand": curlCommand,
+      "headers": options.headers,
+    };
+    print("Curl Command   -- >$result");
     super.onRequest(options, handler);
   }
 

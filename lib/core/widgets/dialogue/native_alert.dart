@@ -10,9 +10,9 @@ void showNativeDialogue(BuildContext context, VoidCallback onPressed) {
       //isAlertActive = true;
       return Platform.isIOS
           ? CupertinoAlertDialog(
-              title: Text('No Internet Connection'),
-              content:
-                  Text('Please check your internet connection and try again.'),
+              title: const Text('No Internet Connection'),
+              content: const Text(
+                  'Please check your internet connection and try again.'),
               actions: [
                 CupertinoDialogAction(
                   onPressed: onPressed,
@@ -21,13 +21,13 @@ void showNativeDialogue(BuildContext context, VoidCallback onPressed) {
               ],
             )
           : AlertDialog(
-              title: Text('No Internet Connection'),
-              content:
-                  Text('Please check your internet connection and try again.'),
+              title: const Text('No Internet Connection'),
+              content: const Text(
+                  'Please check your internet connection and try again.'),
               actions: [
                 TextButton(
                   onPressed: onPressed,
-                  child: Text('Try Again'),
+                  child: const Text('Try Again'),
                 ),
               ],
             );

@@ -1,10 +1,10 @@
 import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_service.dart';
 import 'package:flutter/material.dart';
 
-class ZoNetworkAware extends StatelessWidget {
+class ZoNetworkAwareWidget extends StatelessWidget {
   final Widget Function(
       BuildContext context, ConnectivityWatcherStatus internetStatus) builder;
-  ZoNetworkAware({super.key, required this.builder});
+  ZoNetworkAwareWidget({super.key, required this.builder});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class ZoNetworkAware extends StatelessWidget {
           if (snapshot.hasData) {
             return builder(context, snapshot.data!);
           }
-          return Container();
+          return const SizedBox.shrink();
         });
   }
 }

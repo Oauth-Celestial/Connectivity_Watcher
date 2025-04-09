@@ -158,7 +158,7 @@ class _LoginDemoState extends State<LoginDemo> {
               height: 130,
             ),
             Text('New User? Create Account'),
-            ZoNetworkAware(
+            ZoNetworkAwareWidget(
               builder: (context, status) {
                 if (status == ConnectivityWatcherStatus.connected) {
                   return Container(
