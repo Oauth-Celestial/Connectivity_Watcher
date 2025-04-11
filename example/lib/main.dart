@@ -1,4 +1,5 @@
 import 'package:connectivity_watcher/connectivity_watcher.dart';
+import 'package:dio/dio.dart';
 
 import 'package:example/no_internet.dart';
 import 'package:flutter/material.dart';
@@ -131,22 +132,21 @@ class _LoginDemoState extends State<LoginDemo> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: MaterialButton(
                 onPressed: () async {
-                  // ZoConnectivityWatcher().makeApiCall(apiCall: (status) async {
-                  //   if (status) {
-                  //     Dio dio = Dio();
+                  ZoConnectivityWatcher().makeApiCall(apiCall: (status) async {
+                    if (status) {
+                      Dio dio = Dio();
 
-                  //     dio.interceptors.add(CurlInterceptor());
+                      dio.interceptors.add(CurlInterceptor());
 
-                  //     Response data = await dio.post(
-                  //         "https://jsonplaceholder.typicode.com/posts",
-                  //         data: {
-                  //           "title": 'foo',
-                  //           "body": 'bar',
-                  //           "userId": 1,
-                  //         });
-                  //   }
-                  // });
-                  print(ZoConnectivityWatcher().isInternetAvailable);
+                      Response data = await dio.post(
+                          "https://jsonplaceholder.typicode.com/posts",
+                          data: {
+                            "title": 'foo',
+                            "body": 'bar',
+                            "userId": 1,
+                          });
+                    }
+                  });
                 },
                 child: Text(
                   'Login',
@@ -158,6 +158,9 @@ class _LoginDemoState extends State<LoginDemo> {
               height: 130,
             ),
             Text('New User? Create Account'),
+            SizedBox(
+              height: 10,
+            ),
             ZoNetworkAwareWidget(
               builder: (context, status) {
                 if (status == ConnectivityWatcherStatus.connected) {
@@ -170,7 +173,7 @@ class _LoginDemoState extends State<LoginDemo> {
                     child: MaterialButton(
                       onPressed: () async {},
                       child: Text(
-                        'Login',
+                        'Connected',
                         style: TextStyle(color: Colors.black, fontSize: 25),
                       ),
                     ),

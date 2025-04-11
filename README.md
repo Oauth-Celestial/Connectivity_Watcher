@@ -62,7 +62,7 @@ ZoNetworkAwareWidget(
         child: MaterialButton(
           onPressed: () async {},
           child: Text(
-            'Login',
+            'Connected',
             style: TextStyle(color: Colors.black, fontSize: 25),
           ),
         ),
@@ -223,3 +223,16 @@ bool hasInternet = await ZoConnectivityWatcher().isInternetAvailable;
 ## Features and Bugs
 
 Feel free to post feature requests or report bugs [here](https://github.com/Oauth-Celestial/Connectivity_Watcher/issues).
+
+# My Other packages
+
+- [zo_animated_border](https://pub.dev/packages/zo_animated_border): A package that provides a modern way to create gradient borders with animation in Flutter
+
+- [zo_screenshot](https://pub.dev/packages/zo_screenshot): The zo_screenshot plugin helps restrict screenshots and screen recording in Flutter apps, enhancing security and privacy by preventing unauthorized screen captures.
+
+- [theme_manager_plus](https://pub.dev/packages/theme_manager_plus): Allows customization of your app's theme with your own theme class, eliminating the need for traditional
+
+- [ultimate_extension](https://pub.dev/packages/ultimate_extension): Enhances Dart collections and objects with utilities for advanced data manipulation and simpler coding.
+
+- [date_util_plus](https://pub.dev/packages/date_util_plus): A powerful Dart API designed to augment and simplify date and time handling in your Dart projects.
+- [pick_color](https://pub.dev/packages/pick_color): A Flutter package that allows you to extract colors and hex codes from images with a simple touch.

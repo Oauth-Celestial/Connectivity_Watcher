@@ -1,5 +1,11 @@
 ## Release
 
+## 3.0.2
+
+* Fixed curl Interceptor formatting for postman
+
+* Bug Fixes
+
 ## 3.0.1
 
 ### ⚠️ BREAKING CHANGE

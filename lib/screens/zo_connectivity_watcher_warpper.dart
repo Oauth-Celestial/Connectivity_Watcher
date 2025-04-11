@@ -4,8 +4,6 @@ import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_servic
 import 'package:connectivity_watcher/screens/custom_no_internet.dart';
 import 'package:flutter/material.dart';
 
-/// Builder defination
-
 // ignore: must_be_immutable
 class ZoConnectivityWrapper extends StatelessWidget {
   /// No internet widget thats to be shown
