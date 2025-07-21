@@ -175,7 +175,6 @@ class ZoConnectivityController {
               _connectivityStyle == NoConnectivityStyle.CUSTOMALERT) &&
           isAlertActive) {
         isAlertActive = false;
-        Navigator.pop(currentContext!);
         return true;
       } else {
         _entries.forEach((entry) => entry.remove());

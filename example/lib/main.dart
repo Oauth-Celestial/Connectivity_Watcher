@@ -132,6 +132,25 @@ class _LoginDemoState extends State<LoginDemo> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: MaterialButton(
                 onPressed: () async {
+                  InternetStatus check = await InternetChecker.check();
+
+                  print(check);
+
+                  RetryManager.instance.retryWhenOnline(
+                    () async {
+                      Dio dio = Dio();
+
+                      Response data = await dio.post(
+                          "https://jsonplaceholder.typicode.com/posts",
+                          data: {
+                            "title": 'foo',
+                            "body": 'bar',
+                            "userId": 1,
+                          });
+                      print(data);
+                    },
+                  );
+
                   ZoConnectivityWatcher().makeApiCall(apiCall: (status) async {
                     if (status) {
                       Dio dio = Dio();
@@ -145,6 +164,7 @@ class _LoginDemoState extends State<LoginDemo> {
                             "body": 'bar',
                             "userId": 1,
                           });
+                      print(data);
                     }
                   });
                 },
