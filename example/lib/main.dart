@@ -132,11 +132,11 @@ class _LoginDemoState extends State<LoginDemo> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: MaterialButton(
                 onPressed: () async {
-                  InternetStatus check = await InternetChecker.check();
+                  InternetStatus check = await ZoPingChecker.check();
 
                   print(check);
 
-                  RetryManager.instance.retryWhenOnline(
+                  ZoRetryManager.instance.retryWhenOnline(
                     () async {
                       Dio dio = Dio();
 
@@ -151,22 +151,22 @@ class _LoginDemoState extends State<LoginDemo> {
                     },
                   );
 
-                  ZoConnectivityWatcher().makeApiCall(apiCall: (status) async {
-                    if (status) {
-                      Dio dio = Dio();
+                  ZoConnectivityWatcher().makeApiCallWithRetry(
+                      maxRetries: 2,
+                      delay: Duration(seconds: 1),
+                      apiCall: () async {
+                        Dio dio = Dio();
 
-                      dio.interceptors.add(CurlInterceptor());
+                        dio.interceptors.add(CurlInterceptor());
 
-                      Response data = await dio.post(
-                          "https://jsonplaceholder.typicode.com/posts",
-                          data: {
-                            "title": 'foo',
-                            "body": 'bar',
-                            "userId": 1,
-                          });
-                      print(data);
-                    }
-                  });
+                        Response data = await dio.post(
+                            "https://jsonplaceholder.typicode.com/posts",
+                            data: {
+                              "title": 'foo',
+                              "body": 'bar',
+                              "userId": 1,
+                            });
+                      });
                 },
                 child: Text(
                   'Login',

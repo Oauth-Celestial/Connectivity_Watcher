@@ -35,7 +35,59 @@ import 'package:connectivity_watcher/connectivity_watcher.dart';
 - **`CUSTOMALERT`**: Add your custom alert dialogs, and the package handles showing and hiding them.
 - **`NONE`**: Manage widgets based on internet connectivity at the widget level instead of globally.
 
-### 3. Curl Interceptor for Dio
+### 3. API Call with Internet Status
+
+Execute API tasks seamlessly by verifying internet connectivity beforehand:
+
+```dart
+ZoConnectivityWatcher().makeApiCall(
+  apiCall: (internetStatus) async {
+    if (internetStatus) {
+      Dio dio = Dio();
+      Response data = await dio.post(
+        "https://jsonplaceholder.typicode.com/posts",
+        data: {
+          "title": 'foo',
+          "body": 'bar',
+          "userId": 1,
+        },
+      );
+    }
+  },
+);
+```
+
+### 4. API Call with Retry Mechanism
+
+Execute API tasks with a retry mechanism that checks internet connectivity and calls the API again if the internet is available:
+
+```dart
+ZoConnectivityWatcher().makeApiCallWithRetry(
+  maxRetries: 2,
+  delay: const Duration(seconds: 1),
+  apiCall: () async {
+    final dio = Dio();
+
+    dio.interceptors.add(CurlInterceptor());
+
+    final response = await dio.post(
+      "https://jsonplaceholder.typicode.com/posts",
+      data: {
+        "title": 'foo',
+        "body": 'bar',
+        "userId": 1,
+      },
+    );
+
+    // You can use the response if needed
+    print('Response status: ${response.statusCode}');
+    print('Response data: ${response.data}');
+  },
+);
+
+```
+
+### 5. Curl Interceptor for Dio
 
 Log API requests as curl commands in the console:
 
@@ -44,7 +96,7 @@ Dio dio = Dio();
 dio.interceptors.add(CurlInterceptor());
 ```
 
-### 4. `ZoNetworkAwareWidget`
+### 6. `ZoNetworkAwareWidget`
 
 Handle network-aware functionality in your app. Example:
 
@@ -88,26 +140,10 @@ ZoNetworkAwareWidget(
 );
 ```
 
-### 5. API Call with Internet Status
-
-Execute API tasks seamlessly by verifying internet connectivity beforehand:
+## Check Internet Status
 
 ```dart
-ZoConnectivityWatcher().makeApiCall(
-  apiCall: (internetStatus) async {
-    if (internetStatus) {
-      Dio dio = Dio();
-      Response data = await dio.post(
-        "https://jsonplaceholder.typicode.com/posts",
-        data: {
-          "title": 'foo',
-          "body": 'bar',
-          "userId": 1,
-        },
-      );
-    }
-  },
-);
+bool hasInternet = await ZoConnectivityWatcher().isInternetAvailable;
 ```
 
 ## Usage 🚀
@@ -213,12 +249,6 @@ Widget build(BuildContext context) {
 ### Alert
 
 ![alert](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/7b50b018-d863-44e9-afb3-d627cdafd9a2)
-
-## Check Internet Status
-
-```dart
-bool hasInternet = await ZoConnectivityWatcher().isInternetAvailable;
-```
 
 ## Features and Bugs
 

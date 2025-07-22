@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_service.dart';
 
-class RetryManager {
-  RetryManager._();
-  static final instance = RetryManager._();
+class ZoRetryManager {
+  ZoRetryManager._();
+  static final instance = ZoRetryManager._();
 
   final _tasks = <_RetryTask>[];
   bool _listening = false;
@@ -72,12 +72,3 @@ class _RetryTask {
   final Duration delay;
   _RetryTask(this.fn, this.left, this.delay);
 }
-
-
-// RetryManager.instance.retryWhenOnline(
-//   () async {
-//     await fetchData();
-//   },
-//   maxRetries: 4,
-//   delay: Duration(seconds: 3),
-// );

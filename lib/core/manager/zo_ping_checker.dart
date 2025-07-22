@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 
-class InternetChecker {
+class ZoPingChecker {
   static final _dio = Dio();
 
   /// Checks real internet and measures ping using Dio.

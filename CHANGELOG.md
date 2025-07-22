@@ -1,5 +1,13 @@
 ## Release
 
+## 3.0.3
+
+* Added Retry Mechanism for API Calls with  `makeApiCallWithRetry`.
+
+* Fixed Alert pop issue when internet comes back and alert is not present.
+
+* Bug Fixes and updated package for latest flutter version.
+
 ## 3.0.2
 
 * Fixed curl Interceptor formatting for postman
