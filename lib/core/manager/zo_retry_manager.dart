@@ -25,8 +25,7 @@ class ZoRetryManager {
   void _listen() {
     if (_listening) return;
     _listening = true;
-    _sub =
-        ZoConnectivityWatcher().connectivityController.stream.listen((_) async {
+    _sub = ZoConnectivityWatcher().stream.listen((_) async {
       if (await ZoConnectivityWatcher().isInternetAvailable) _runQueue();
     });
   }

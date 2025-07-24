@@ -4,7 +4,9 @@
 [![pub points](https://img.shields.io/pub/points/connectivity_watcher?color=2E8B57&label=pub%20points)](https://pub.dev/packages/connectivity_watcher/score)
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
-**Connectivity Watcher** is a robust Flutter package designed to monitor internet connectivity and network availability status in real-time. This ensures that your app can effectively manage and respond to changes in connectivity, providing a seamless user experience.
+A Flutter package for lightning-fast internet connectivity checks—with subsecond response times, even on mobile networks! Includes support for custom UI, so you can seamlessly show connection status your way.
+
+Ask ChatGPT
 
 ## Getting started
 

@@ -5,6 +5,8 @@ import 'package:example/no_internet.dart';
 import 'package:flutter/material.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  ZoConnectivityWatcher().setUp();
   runApp(MyApp());
 }
 

@@ -9,7 +9,7 @@ class ZoNetworkAwareWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<ConnectivityWatcherStatus>(
-        stream: ZoConnectivityWatcher().connectivityController.stream,
+        stream: ZoConnectivityWatcher().stream,
         initialData: ConnectivityWatcherStatus.connected,
         builder: (context, snapshot) {
           if (snapshot.hasData) {

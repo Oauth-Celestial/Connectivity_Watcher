@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:connectivity_watcher/core/connectivity_inherited.dart';
+import 'package:connectivity_watcher/controller/zo_connectivity_controller.dart';
 import 'package:connectivity_watcher/core/manager/zo_retry_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -19,11 +19,22 @@ class ZoConnectivityWatcher {
 
   BuildContext get currentContext => _navigationKey!.currentContext!;
 
-  StreamController<ConnectivityWatcherStatus> connectivityController =
+  StreamController<ConnectivityWatcherStatus> _connectivityController =
       StreamController<ConnectivityWatcherStatus>.broadcast();
+
+  Stream<ConnectivityWatcherStatus> get stream =>
+      _connectivityController.stream;
 
   setNavigatorKey(GlobalKey<NavigatorState> key) {
     _navigationKey = key;
+  }
+
+  setUp() {
+    ZoConnectivityController().setUp();
+  }
+
+  updateStream(ConnectivityWatcherStatus status) {
+    _connectivityController.sink.add(status);
   }
 
   bool isInternetAvailable = false;
@@ -40,10 +51,7 @@ class ZoConnectivityWatcher {
   /// method on the controller obtained from the `ZoConnectivityInheritedWidget` found in the current
   /// context.
   Future<bool> hideNoInternet() async {
-    return await currentContext
-        .dependOnInheritedWidgetOfExactType<ZoConnectivityInheritedWidget>()!
-        .controller!
-        .hideNoInternetScreen();
+    return await ZoConnectivityController().hideNoInternetScreen();
   }
 
   /// The function `makeApiCall` checks for internet connection status and calls the provided API function
@@ -54,7 +62,7 @@ class ZoConnectivityWatcher {
   /// boolean parameter `internetStatus` as input. This function is used to make an API call and pass the
   /// internet connection status to it.
   makeApiCall({required Function(bool internetStatus) apiCall}) async {
-    bool status = await InternetConnectionChecker().hasConnection;
+    bool status = await InternetConnectionChecker.instance.hasConnection;
     apiCall(status);
   }
 

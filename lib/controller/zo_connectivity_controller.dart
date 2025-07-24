@@ -28,6 +28,53 @@ class ZoConnectivityController {
   Widget? _customAlert;
   InternetConnectionChecker checker = InternetConnectionChecker.createInstance(
       checkInterval: Duration(seconds: 2), checkTimeout: Duration(seconds: 2));
+  StreamController<InternetConnectionStatus> _statusController =
+      StreamController.broadcast();
+
+  ZoConnectivityController._();
+
+  static final ZoConnectivityController _instance =
+      ZoConnectivityController._();
+
+  factory ZoConnectivityController() {
+    return _instance;
+  }
+  StreamSubscription<InternetConnectionStatus>? _subscription;
+
+  setUp() async {
+    bool hasConnection = await checker.hasConnection;
+
+    if (hasConnection) {
+      ZoConnectivityWatcher().isInternetAvailable = true;
+      ZoConnectivityWatcher().updateStream(ConnectivityWatcherStatus.connected);
+    } else {
+      ZoConnectivityWatcher().isInternetAvailable = false;
+      ZoConnectivityWatcher()
+          .updateStream(ConnectivityWatcherStatus.disconnected);
+    }
+
+    _subscription = checker.onStatusChange.listen((status) {
+      _statusController.add(status);
+      switch (status) {
+        case InternetConnectionStatus.connected:
+          // TODO: Handle this case.
+
+          ZoConnectivityWatcher().isInternetAvailable = true;
+          ZoConnectivityWatcher()
+              .updateStream(ConnectivityWatcherStatus.connected);
+          break;
+        case InternetConnectionStatus.disconnected:
+          // TODO: Handle this case.
+          ZoConnectivityWatcher().isInternetAvailable = false;
+          ZoConnectivityWatcher()
+              .updateStream(ConnectivityWatcherStatus.disconnected);
+          break;
+        case InternetConnectionStatus.slow:
+          // TODO: Handle this case.
+          break;
+      }
+    });
+  }
 
   setupConnectivityListner({
     CustomNoInternetWrapper? offlineWidget,
@@ -54,7 +101,7 @@ class ZoConnectivityController {
       }
     }
 
-    checker.onStatusChange.listen((status) {
+    _statusController.stream.listen((status) {
       if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
           (_contextKey.currentState?.overlay) != null) {
         _overlayState = (_contextKey.currentState!.overlay);
@@ -67,11 +114,6 @@ class ZoConnectivityController {
             if (connectivityStyle != NoConnectivityStyle.NONE) {
               _removeNoInternet();
             }
-            ZoConnectivityWatcher().isInternetAvailable = true;
-            ZoConnectivityWatcher()
-                .connectivityController
-                .sink
-                .add(ConnectivityWatcherStatus.connected);
           } catch (e) {
             print(e);
           }
@@ -80,15 +122,13 @@ class ZoConnectivityController {
 
         /// DisconnectedState
         case InternetConnectionStatus.disconnected:
-          ZoConnectivityWatcher().isInternetAvailable = false;
-          ZoConnectivityWatcher()
-              .connectivityController
-              .sink
-              .add(ConnectivityWatcherStatus.disconnected);
           if (connectivityStyle != NoConnectivityStyle.NONE) {
             showNoInternet();
           }
 
+          break;
+        case InternetConnectionStatus.slow:
+          // TODO: Handle this case.
           break;
       }
     });
@@ -101,7 +141,7 @@ class ZoConnectivityController {
   }
 
   isInternetBack({required Function(bool) internetStatus}) async {
-    bool isConnected = await InternetConnectionChecker().hasConnection;
+    bool isConnected = await InternetConnectionChecker.instance.hasConnection;
 
     if (isConnected) {
       _removeNoInternet();
@@ -226,7 +266,7 @@ class ZoConnectivityController {
 
   /// Get status of conncetion
   Future<bool> getConnectivityStatus() async {
-    bool isconnected = await InternetConnectionChecker().hasConnection;
+    bool isconnected = await InternetConnectionChecker.instance.hasConnection;
     return isconnected;
   }
 
