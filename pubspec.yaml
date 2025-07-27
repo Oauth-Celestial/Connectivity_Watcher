@@ -1,6 +1,6 @@
 name: connectivity_watcher
-description: A Flutter package for lightning-fast internet connectivity checks—with subsecond response times, even on mobile networks! Includes support for custom UI, so you can seamlessly show connection status your way.
-version: 3.0.3
+description: A Flutter package for fast internet checks with subsecond response times and customizable offline UI.
+version: 3.0.4
 repository: "https://github.com/Oauth-Celestial/Connectivity_Watcher.git"
 
 environment:

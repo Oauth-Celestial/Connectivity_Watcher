@@ -57,20 +57,16 @@ class ZoConnectivityController {
       _statusController.add(status);
       switch (status) {
         case InternetConnectionStatus.connected:
-          // TODO: Handle this case.
-
           ZoConnectivityWatcher().isInternetAvailable = true;
           ZoConnectivityWatcher()
               .updateStream(ConnectivityWatcherStatus.connected);
           break;
         case InternetConnectionStatus.disconnected:
-          // TODO: Handle this case.
           ZoConnectivityWatcher().isInternetAvailable = false;
           ZoConnectivityWatcher()
               .updateStream(ConnectivityWatcherStatus.disconnected);
           break;
         case InternetConnectionStatus.slow:
-          // TODO: Handle this case.
           break;
       }
     });
@@ -82,6 +78,9 @@ class ZoConnectivityController {
     NoConnectivityStyle? connectivityStyle = NoConnectivityStyle.SNACKBAR,
     Widget? customAlert,
   }) async {
+    if (_subscription == null) {
+      setUp();
+    }
     if (connectivityStyle != NoConnectivityStyle.NONE) {
       if (navigatorKey != null) {
         _contextKey = navigatorKey;
