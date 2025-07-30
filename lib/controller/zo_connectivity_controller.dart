@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_service.dart';
 import 'package:connectivity_watcher/core/widgets/dialogue/native_alert.dart';
 import 'package:connectivity_watcher/screens/custom_no_internet.dart';
@@ -41,7 +42,22 @@ class ZoConnectivityController {
   }
   StreamSubscription<InternetConnectionStatus>? _subscription;
 
+  StealthInternetChecker _stealthInternetChecker = StealthInternetChecker();
+
+  Debouncer _debouncer = Debouncer(delay: Duration(seconds: 1));
+
+  stealthSetup() {
+    _stealthInternetChecker.onStatusChange.listen((status) {
+      _debouncer(
+        () {
+          print("Stealth Status ${status}");
+        },
+      );
+    });
+  }
+
   setUp() async {
+    stealthSetup();
     bool hasConnection = await checker.hasConnection;
 
     if (hasConnection) {
