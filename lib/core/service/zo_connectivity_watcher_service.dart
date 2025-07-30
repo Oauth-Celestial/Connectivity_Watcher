@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:connectivity_watcher/controller/zo_connectivity_controller.dart';
 import 'package:connectivity_watcher/core/manager/zo_retry_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+
 part '../../controller/enum_connection.dart';
 
 class ZoConnectivityWatcher {
@@ -62,7 +62,7 @@ class ZoConnectivityWatcher {
   /// boolean parameter `internetStatus` as input. This function is used to make an API call and pass the
   /// internet connection status to it.
   makeApiCall({required Function(bool internetStatus) apiCall}) async {
-    bool status = await InternetConnectionChecker.instance.hasConnection;
+    bool status = await ZoConnectivityController().getConnectivityStatus();
     apiCall(status);
   }
 

@@ -24,6 +24,9 @@ class StealthInternetChecker {
       onCancel: _stop,
     );
   }
+  Future<bool> getCurrentStatus() async {
+    return await _hasInternet();
+  }
 
   Stream<bool> get onStatusChange => _controller.stream;
 

@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     return ZoConnectivityWrapper(
       /// connectivityStyle: NoConnectivityStyle.CUSTOM,
       navigationKey: navigatorKey,
-      connectivityStyle: NoConnectivityStyle.ALERT,
+      connectivityStyle: NoConnectivityStyle.CUSTOM,
       customAlert: AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
