@@ -25,7 +25,7 @@ class _CustomNoInternetState extends State<CustomNoInternet>
       body: SafeArea(
           child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 40,
           ),
           Container(
@@ -44,7 +44,7 @@ class _CustomNoInternetState extends State<CustomNoInternet>
           Text(
             "No Internet connection.",
             style: TextStyle(
-                color: Colors.black.withOpacity(0.6),
+                color: Colors.black.withValues(alpha: 0.6),
                 fontSize: 20,
                 fontWeight: FontWeight.bold),
           ),

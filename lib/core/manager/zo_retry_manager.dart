@@ -14,7 +14,8 @@ class ZoRetryManager {
     int maxRetries = 3,
     Duration delay = const Duration(seconds: 2),
   }) async {
-    if (await ZoConnectivityWatcher().isInternetAvailable) {
+    bool hasConnection = await ZoConnectivityWatcher().isInternetAvailable;
+    if (hasConnection) {
       _tryRun(task, maxRetries, delay);
     } else {
       _tasks.add(_RetryTask(task, maxRetries, delay));
@@ -26,7 +27,8 @@ class ZoRetryManager {
     if (_listening) return;
     _listening = true;
     _sub = ZoConnectivityWatcher().stream.listen((_) async {
-      if (await ZoConnectivityWatcher().isInternetAvailable) _runQueue();
+      bool hasConnection = await ZoConnectivityWatcher().isInternetAvailable;
+      if (hasConnection) _runQueue();
     });
   }
 

@@ -1,5 +1,9 @@
 ## Release
 
+## 3.0.5
+
+* Added Socket based connection check.
+
 ## 3.0.4
 
 * Fixed initial network status detection bug.
