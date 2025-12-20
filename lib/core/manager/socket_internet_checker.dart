@@ -1,38 +1,44 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
+import 'package:dio/dio.dart';
 
 class StealthInternetChecker {
   final Duration checkInterval;
   final Duration timeout;
-  InternetAddress? target;
-  final int port;
+  final String? heartbeatUrl;
+  final List<String> dnsTargets;
+  final int dnsPort;
 
+  late final Dio _dio;
   late final StreamController<bool> _controller;
   bool _lastStatus = false;
   Timer? _timer;
 
   StealthInternetChecker({
-    this.checkInterval = const Duration(seconds: 2),
-    this.timeout = const Duration(seconds: 2),
-    InternetAddress? target,
-    this.port = 53, // DNS port
+    this.heartbeatUrl,
+    this.checkInterval = const Duration(seconds: 5),
+    this.timeout = const Duration(seconds: 3),
+    this.dnsTargets = const ['8.8.8.8', '1.1.1.1'],
+    this.dnsPort = 443,
   }) {
-    this.target = target ?? InternetAddress('8.8.8.8');
+    _dio = Dio(BaseOptions(
+      connectTimeout: timeout,
+      receiveTimeout: timeout,
+      validateStatus: (status) => status != null && status < 500,
+    ));
+
     _controller = StreamController<bool>.broadcast(
       onListen: _start,
       onCancel: _stop,
     );
-  }
-  Future<bool> getCurrentStatus() async {
-    return await _hasInternet();
   }
 
   Stream<bool> get onStatusChange => _controller.stream;
 
   void _start() {
     _timer = Timer.periodic(checkInterval, (_) => _checkInternet());
-    _checkInternet(); // initial check
+    _checkInternet();
   }
 
   void _stop() {
@@ -41,16 +47,37 @@ class StealthInternetChecker {
   }
 
   Future<void> _checkInternet() async {
-    bool isConnected = await _hasInternet();
+    bool isConnected = await hasInternet();
     if (isConnected != _lastStatus) {
       _lastStatus = isConnected;
       _controller.add(isConnected);
     }
   }
 
-  Future<bool> _hasInternet() async {
+  Future<bool> hasInternet() async {
+    if (heartbeatUrl != null) {
+      try {
+        final response = await _dio.head(heartbeatUrl!);
+        if (response.statusCode != null) return true;
+      } catch (e) {}
+    }
+
+    return await _checkDnsConnection();
+  }
+
+  Future<bool> _checkDnsConnection() async {
     try {
-      final socket = await Socket.connect(target, port, timeout: timeout);
+      final checks = dnsTargets.map((ip) => _trySocket(ip)).toList();
+      final results = await Future.wait(checks);
+      return results.any((success) => success);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> _trySocket(String ip) async {
+    try {
+      final socket = await Socket.connect(ip, dnsPort, timeout: timeout);
       socket.destroy();
       return true;
     } catch (_) {

@@ -43,7 +43,10 @@ class ZoConnectivityController {
 
   Debouncer _debouncer = Debouncer(delay: Duration(seconds: 1));
 
-  setUp() async {
+  void setUp({StealthInternetChecker? internetChecker}) async {
+    if (internetChecker != null) {
+      _stealthInternetChecker = internetChecker;
+    }
     _subscription = _stealthInternetChecker.onStatusChange.listen((status) {
       _debouncer(
         () {
@@ -63,7 +66,7 @@ class ZoConnectivityController {
     });
   }
 
-  setupConnectivityListner({
+  void setupConnectivityListner({
     CustomNoInternetWrapper? offlineWidget,
     GlobalKey<NavigatorState>? navigatorKey,
     NoConnectivityStyle? connectivityStyle = NoConnectivityStyle.SNACKBAR,
@@ -119,14 +122,14 @@ class ZoConnectivityController {
     return await _removeNoInternet();
   }
 
-  isInternetBack({required Function(bool) internetStatus}) async {
-    bool isConnected = await _stealthInternetChecker.getCurrentStatus();
+  void isInternetBack({required Function(bool) internetStatus}) async {
+    bool isConnected = await _stealthInternetChecker.hasInternet();
 
     if (isConnected) {
       _removeNoInternet();
       internetStatus(true);
     } else {
-      return internetStatus(false);
+      internetStatus(false);
     }
   }
 
@@ -207,7 +210,7 @@ class ZoConnectivityController {
   }
 
   /// Responsible for getting the current context from the tree and draw the  custom widget
-  showNoInternet() {
+  void showNoInternet() {
     if (ZoConnectivityWatcher().isNoInternetWidgetVisible) {
       return;
     }
@@ -245,7 +248,7 @@ class ZoConnectivityController {
 
   /// Get status of conncetion
   Future<bool> getConnectivityStatus() async {
-    bool isconnected = await _stealthInternetChecker.getCurrentStatus();
+    bool isconnected = await _stealthInternetChecker.hasInternet();
     return isconnected;
   }
 

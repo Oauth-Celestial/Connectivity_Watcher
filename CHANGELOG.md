@@ -1,5 +1,11 @@
 ## Release
 
+## 3.0.6
+
+* Now you can pass your custom heartbeat url or dns address to check network connectivity.
+* Removed ping check.
+* Updated curl generator
+
 ## 3.0.5
 
 * Added Socket based connection check.

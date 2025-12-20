@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 class CurlInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final curlCommand = _generateCurlCommand(options);
+    final curlCommand = options.toCURL();
 
     print('\n' + '=' * 80);
     print('🔗 CURL COMMAND');
@@ -14,37 +14,48 @@ class CurlInterceptor extends Interceptor {
 
     super.onRequest(options, handler);
   }
+}
 
-  String _generateCurlCommand(RequestOptions options) {
-    final buffer = StringBuffer();
+extension DioCurlExtension on RequestOptions {
+  String toCURL() {
+    List<String> cmd = ['curl'];
 
-    buffer.write('curl');
+    cmd.add('-X ${method.toUpperCase()}');
 
-    // Add HTTP method if not GET
-    if (options.method.toUpperCase() != 'GET') {
-      buffer.write(' -X ${options.method.toUpperCase()}');
-    }
-
-    // Add headers
-    options.headers.forEach((key, value) {
-      buffer.write(' -H "${key}: $value"');
+    headers.forEach((key, value) {
+      if (key != 'Cookie') {
+        cmd.add("-H '$key: $value'");
+      }
     });
 
-    // Add body
-    if (options.data != null) {
-      String body = '';
-      if (options.data is Map) {
-        body = jsonEncode(options.data);
-      } else if (options.data is String) {
-        body = options.data;
+    // 3. Add Body
+    if (data != null) {
+      if (data is FormData) {
+        final formData = data as FormData;
+        for (var field in formData.fields) {
+          cmd.add("-F '${field.key}=${field.value}'");
+        }
+        for (var file in formData.files) {
+          cmd.add("-F '${file.key}=@${file.value.filename}'");
+        }
+      } else if (data is Map || data is List) {
+        try {
+          final jsonBody = jsonEncode(data);
+
+          final escapedBody = jsonBody.replaceAll("'", r"'\''");
+          cmd.add("--data-raw '$escapedBody'");
+        } catch (_) {
+          cmd.add("--data-raw '${data.toString()}'");
+        }
+      } else {
+        final String rawData = data.toString();
+        final escapedBody = rawData.replaceAll("'", r"'\''");
+        cmd.add("--data-raw '$escapedBody'");
       }
-      body = body.replaceAll("'", r"'\''"); // Escape single quotes
-      buffer.write(" --data-raw '${body}'");
     }
 
-    // Add URL
-    buffer.write(' "${options.uri}"');
+    cmd.add("'$uri'");
 
-    return buffer.toString();
+    return cmd.join(' \\\n  ');
   }
 }

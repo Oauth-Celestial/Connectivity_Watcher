@@ -1,4 +1,5 @@
 import 'package:connectivity_watcher/connectivity_watcher.dart';
+import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:dio/dio.dart';
 
 import 'package:example/no_internet.dart';
@@ -6,7 +7,9 @@ import 'package:flutter/material.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  ZoConnectivityWatcher().setUp();
+  ZoConnectivityWatcher().setUp(
+      internetChecker:
+          StealthInternetChecker(heartbeatUrl: "https://www.google.com/"));
   runApp(MyApp());
 }
 
@@ -134,10 +137,6 @@ class _LoginDemoState extends State<LoginDemo> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: MaterialButton(
                 onPressed: () async {
-                  InternetStatus check = await ZoPingChecker.check();
-
-                  print(check);
-
                   ZoRetryManager.instance.retryWhenOnline(
                     () async {
                       Dio dio = Dio();

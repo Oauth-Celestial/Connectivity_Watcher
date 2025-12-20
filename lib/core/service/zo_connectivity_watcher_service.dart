@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity_watcher/controller/zo_connectivity_controller.dart';
+import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:connectivity_watcher/core/manager/zo_retry_manager.dart';
 import 'package:flutter/material.dart';
 
@@ -25,15 +26,15 @@ class ZoConnectivityWatcher {
   Stream<ConnectivityWatcherStatus> get stream =>
       _connectivityController.stream;
 
-  setNavigatorKey(GlobalKey<NavigatorState> key) {
+  void setNavigatorKey(GlobalKey<NavigatorState> key) {
     _navigationKey = key;
   }
 
-  setUp() {
-    ZoConnectivityController().setUp();
+  void setUp({StealthInternetChecker? internetChecker}) {
+    ZoConnectivityController().setUp(internetChecker: internetChecker);
   }
 
-  updateStream(ConnectivityWatcherStatus status) {
+  void updateStream(ConnectivityWatcherStatus status) {
     _connectivityController.sink.add(status);
   }
 
