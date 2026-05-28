@@ -1,5 +1,15 @@
 ## Release
 
+## 3.1.0
+
+### 🚀 What's New
+
+* **In-App Network Inspector**: Added a dedicated Chrome-like network tab (`ZoNetworkLogsScreen`) to monitor, inspect, and copy cURL commands for all your HTTP traffic.
+* **Blazing Fast Connectivity Checks**: Optimized DNS socket connection tests using a `Completer` for near-instantaneous offline-to-online state transitions.
+* **Zero-Lag UI Recovery**: Dismissing the "No Internet" overlay is now entirely synchronous with network restoration, eliminating unnecessary background double-checks.
+* **Hardened Retry Queue**: Improved thread safety for `ZoRetryManager` to guarantee flawless execution of stacked offline requests once the connection returns.
+* **Dynamic Overlay Anchoring**: The overlay manager now reliably attaches to the active context even during complex navigation stacks.
+
 ## 3.0.6
 
 * Now you can pass your custom heartbeat url or dns address to check network connectivity.

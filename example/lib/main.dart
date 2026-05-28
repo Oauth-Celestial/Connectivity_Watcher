@@ -7,9 +7,16 @@ import 'package:flutter/material.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  
   ZoConnectivityWatcher().setUp(
-      internetChecker:
-          StealthInternetChecker(heartbeatUrl: "https://www.google.com/"));
+    internetChecker: StealthInternetChecker(
+      heartbeatUrl: "https://www.google.com/",
+    ),
+  );
+
+  // Initialize the ping system (defaults to pinging 8.8.8.8)
+  ZoConnectivityWatcher().initPingService();
+
   runApp(MyApp());
 }
 
@@ -132,6 +139,12 @@ class _ApiTestDashboardState extends State<ApiTestDashboard> {
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: ZoPingWidget(),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.monitor_heart_outlined),
             tooltip: 'Network Logs',

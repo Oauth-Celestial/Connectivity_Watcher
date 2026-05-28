@@ -181,11 +181,78 @@ ZoNetworkAwareWidget(
 
 ## 🧪 Curl Logging for Dio
 
-Log API requests as curl commands:
+Log API requests as curl commands in your console:
 
 ```dart
 final dio = Dio();
 dio.interceptors.add(CurlInterceptor());
+```
+
+---
+
+## 🔎 In-App Network Inspector (New!)
+
+Monitor all HTTP traffic directly inside your app, similar to the Chrome Network Tab. You can view status codes, request/response bodies, headers, and easily copy cURL commands.
+
+### 1. Attach the Logger
+Add the `NetworkLoggerInterceptor` to your Dio client to start tracking:
+
+```dart
+final dio = Dio();
+ZoConnectivityWatcher().setupDioLogger(dio);
+```
+
+### 2. Open the Inspector
+Open the UI from anywhere in your app to view the logs:
+
+```dart
+ZoConnectivityWatcher().showNetworkLogsScreen(context);
+```
+
+### 3. Manage Logs Programmatically
+You can also access or clear the logs in code:
+
+```dart
+// Get all logs
+final logs = ZoConnectivityWatcher().getNetworkLogs();
+
+// Clear logs
+ZoNetworkLogManager.instance.clearLogs();
+```
+
+---
+
+## 🎮 Gaming-Style Ping System (New!)
+
+Measure the exact round-trip latency to a server in real-time and display it in your app, similar to AAA gaming titles (e.g., PUBG, Valorant). It uses a lightweight background TCP socket connection to measure latency without blocking the UI.
+
+### 1. Initialize the Ping Service
+Start the service in your initialization block. You can ping your own API or game server, or leave it blank to default to Google DNS (`8.8.8.8`).
+
+```dart
+// Defaults to pinging 8.8.8.8 every 2 seconds
+ZoConnectivityWatcher().initPingService();
+
+// Or measure latency to your own server:
+ZoConnectivityWatcher().initPingService(
+  targetIp: '192.168.1.1',
+  interval: const Duration(seconds: 1),
+);
+```
+
+### 2. Display the Ping Widget
+Add the `ZoPingWidget` anywhere in your UI. It will automatically update and color-code the ping in milliseconds (Green for <100ms, Orange for <200ms, Red for >200ms).
+
+```dart
+AppBar(
+  actions: [
+    ZoPingWidget(
+      goodPingThreshold: 100,
+      mediumPingThreshold: 200,
+      // You can also use a custom builder to completely style it yourself!
+    ),
+  ],
+)
 ```
 
 ---
