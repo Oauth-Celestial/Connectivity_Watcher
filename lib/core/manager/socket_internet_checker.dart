@@ -66,13 +66,27 @@ class StealthInternetChecker {
   }
 
   Future<bool> _checkDnsConnection() async {
-    try {
-      final checks = dnsTargets.map((ip) => _trySocket(ip)).toList();
-      final results = await Future.wait(checks);
-      return results.any((success) => success);
-    } catch (_) {
+    final completer = Completer<bool>();
+    int failedCount = 0;
+
+    for (var ip in dnsTargets) {
+      _trySocket(ip).then((success) {
+        if (success) {
+          if (!completer.isCompleted) completer.complete(true);
+        } else {
+          failedCount++;
+          if (failedCount == dnsTargets.length && !completer.isCompleted) {
+            completer.complete(false);
+          }
+        }
+      });
+    }
+
+    if (dnsTargets.isEmpty) {
       return false;
     }
+
+    return completer.future;
   }
 
   Future<bool> _trySocket(String ip) async {

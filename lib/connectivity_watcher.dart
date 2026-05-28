@@ -8,3 +8,4 @@ export 'controller/zo_connectivity_controller.dart';
 export 'core/widgets/network_aware/zo_network_aware.dart';
 
 export 'core/manager/zo_retry_manager.dart';
+export 'core/interceptors/connectivity_retry_interceptor.dart';

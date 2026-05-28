@@ -13,32 +13,42 @@ class ZoRetryManager {
     Future<void> Function() task, {
     int maxRetries = 3,
     Duration delay = const Duration(seconds: 2),
-  }) async {
-    bool hasConnection = await ZoConnectivityWatcher().isInternetAvailable;
+  }) {
+    bool hasConnection = ZoConnectivityWatcher().isInternetAvailable;
     if (hasConnection) {
       _tryRun(task, maxRetries, delay);
     } else {
-      _tasks.add(_RetryTask(task, maxRetries, delay));
-      _listen();
+      enqueue(task, maxRetries: maxRetries, delay: delay);
     }
+  }
+
+  void enqueue(
+    Future<void> Function() task, {
+    int maxRetries = 99999,
+    Duration delay = const Duration(seconds: 2),
+  }) {
+    _tasks.add(_RetryTask(task, maxRetries, delay));
+    _listen();
   }
 
   void _listen() {
     if (_listening) return;
     _listening = true;
-    _sub = ZoConnectivityWatcher().stream.listen((_) async {
-      bool hasConnection = await ZoConnectivityWatcher().isInternetAvailable;
-      if (hasConnection) _runQueue();
+    _sub = ZoConnectivityWatcher().stream.listen((status) {
+      if (status == ConnectivityWatcherStatus.connected) {
+        _runQueue();
+      }
     });
   }
 
   Future<void> _runQueue() async {
+    if (_tasks.isEmpty) return;
     final tasks = List.of(_tasks);
     _tasks.clear();
 
-    for (final task in tasks) {
-      _tryRun(task.fn, task.left, task.delay);
-    }
+    await Future.wait(
+      tasks.map((task) => _tryRun(task.fn, task.left, task.delay)),
+    );
 
     if (_tasks.isEmpty) _stop();
   }

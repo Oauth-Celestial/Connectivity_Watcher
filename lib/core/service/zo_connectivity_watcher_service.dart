@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:connectivity_watcher/controller/zo_connectivity_controller.dart';
 import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:connectivity_watcher/core/manager/zo_retry_manager.dart';
+import 'package:connectivity_watcher/core/interceptors/connectivity_retry_interceptor.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 part '../../controller/enum_connection.dart';
@@ -34,6 +36,12 @@ class ZoConnectivityWatcher {
     ZoConnectivityController().setUp(internetChecker: internetChecker);
   }
 
+  /// Set up a Dio client to automatically track and retry failed network requests
+  /// when the internet connection is restored.
+  void setupDio(Dio dio) {
+    dio.interceptors.add(ConnectivityRetryInterceptor(dio: dio));
+  }
+
   void updateStream(ConnectivityWatcherStatus status) {
     _connectivityController.sink.add(status);
   }
@@ -52,7 +60,7 @@ class ZoConnectivityWatcher {
   /// method on the controller obtained from the `ZoConnectivityInheritedWidget` found in the current
   /// context.
   Future<bool> hideNoInternet() async {
-    return await ZoConnectivityController().hideNoInternetScreen();
+    return ZoConnectivityController().hideNoInternetScreen();
   }
 
   /// The function `makeApiCall` checks for internet connection status and calls the provided API function

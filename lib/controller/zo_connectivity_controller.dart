@@ -3,6 +3,7 @@ import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_service.dart';
 import 'package:connectivity_watcher/core/widgets/dialogue/native_alert.dart';
 import 'package:connectivity_watcher/screens/custom_no_internet.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ZoConnectivityController {
@@ -103,10 +104,10 @@ class ZoConnectivityController {
       if (status) {
         try {
           if (connectivityStyle != NoConnectivityStyle.NONE) {
-            _removeNoInternet();
+            _removeNoInternet(trusted: true);
           }
         } catch (e) {
-          print(e);
+          debugPrint(e.toString());
         }
       } else {
         if (connectivityStyle != NoConnectivityStyle.NONE) {
@@ -118,8 +119,11 @@ class ZoConnectivityController {
 
   /// removes the no internet screen when internet comes back
   Future<bool> hideNoInternetScreen() async {
-    ZoConnectivityWatcher().isNoInternetWidgetVisible = false;
-    return await _removeNoInternet();
+    bool removed = await _removeNoInternet();
+    if (removed) {
+      ZoConnectivityWatcher().isNoInternetWidgetVisible = false;
+    }
+    return removed;
   }
 
   void isInternetBack({required Function(bool) internetStatus}) async {
@@ -169,11 +173,12 @@ class ZoConnectivityController {
   }
 
   /// Removes the No internet widget from the tree and clears overlay entry
-  Future<bool> _removeNoInternet() async {
-    bool isNetworkBack = await getConnectivityStatus();
-
-    if (!isNetworkBack) {
-      return false;
+  Future<bool> _removeNoInternet({bool trusted = false}) async {
+    if (!trusted) {
+      bool isNetworkBack = await getConnectivityStatus();
+      if (!isNetworkBack) {
+        return false;
+      }
     }
 
     ZoConnectivityWatcher().isInternetAvailable = true;
@@ -190,7 +195,7 @@ class ZoConnectivityController {
           ScaffoldMessenger.of(currentContext!).removeCurrentSnackBar();
           return true;
         } catch (e) {
-          print("error");
+          debugPrint("error: $e");
           return false;
         }
       } else if ((_connectivityStyle == NoConnectivityStyle.ALERT ||
@@ -199,7 +204,11 @@ class ZoConnectivityController {
         isAlertActive = false;
         return true;
       } else {
-        _entries.forEach((entry) => entry.remove());
+        for (var entry in _entries) {
+          if (entry.mounted) {
+            entry.remove();
+          }
+        }
         _entries.clear();
         _overlayContext.clear();
         return true;
@@ -232,6 +241,13 @@ class ZoConnectivityController {
           },
         );
       } else {
+        if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
+            _contextKey.currentState?.overlay != null) {
+          _overlayState = _contextKey.currentState!.overlay;
+        } else if (_overlayState == null) {
+          _overlayState = Overlay.of(currentContext!);
+        }
+
         _entry = OverlayEntry(builder: (context) {
           _overlayContext.add(context);
           return _userWidget ??
