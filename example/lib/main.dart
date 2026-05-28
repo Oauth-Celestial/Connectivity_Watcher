@@ -71,153 +71,457 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
               primarySwatch: Colors.blue,
             ),
-            home: LoginDemo());
+            home: ApiTestDashboard());
       },
     );
   }
 }
 
-class LoginDemo extends StatefulWidget {
+class ApiTestDashboard extends StatefulWidget {
   @override
-  _LoginDemoState createState() => _LoginDemoState();
+  _ApiTestDashboardState createState() => _ApiTestDashboardState();
 }
 
-class _LoginDemoState extends State<LoginDemo> {
+class _ApiTestDashboardState extends State<ApiTestDashboard> {
+  late final Dio _dio;
+  String _lastResult = '';
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    _dio = Dio();
+    ZoConnectivityWatcher().setupDioLogger(_dio);
+  }
+
+  void _showResult(String method, dynamic response) {
+    if (mounted) {
+      setState(() {
+        _lastResult = '$method → ${response.statusCode}';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$method completed — ${response.statusCode}'),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    }
+  }
+
+  void _showError(String method, dynamic e) {
+    if (mounted) {
+      setState(() {
+        _lastResult = '$method → ERROR';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$method failed'),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: Text("Login Page"),
+        title: const Text('API Test Dashboard'),
+        backgroundColor: const Color(0xFF1E1E2C),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.monitor_heart_outlined),
+            tooltip: 'Network Logs',
+            onPressed: () {
+              ZoConnectivityWatcher().showNetworkLogsScreen(context);
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 200,
-            ),
-            Padding(
-              //padding: const EdgeInsets.only(left:15.0,right: 15.0,top:0,bottom: 0),
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Email',
-                    hintText: 'Enter valid email id as abc@gmail.com'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    hintText: 'Enter secure password'),
-              ),
-            ),
-            MaterialButton(
-              onPressed: () async {},
-              child: Text(
-                'Forgot Password',
-                style: TextStyle(color: Colors.blue, fontSize: 15),
-              ),
-            ),
-            Container(
-              height: 50,
-              width: 250,
-              decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
-              child: MaterialButton(
-                onPressed: () async {
-                  ZoRetryManager.instance.retryWhenOnline(
-                    () async {
-                      Dio dio = Dio();
-
-                      Response data = await dio.post(
-                          "https://jsonplaceholder.typicode.com/posts",
-                          data: {
-                            "title": 'foo',
-                            "body": 'bar',
-                            "userId": 1,
-                          });
-                      print(data);
-                    },
-                  );
-
-                  ZoConnectivityWatcher().makeApiCallWithRetry(
-                      maxRetries: 2,
-                      delay: Duration(seconds: 1),
-                      apiCall: () async {
-                        Dio dio = Dio();
-
-                        dio.interceptors.add(CurlInterceptor());
-
-                        Response data = await dio.post(
-                            "https://jsonplaceholder.typicode.com/posts",
-                            data: {
-                              "title": 'foo',
-                              "body": 'bar',
-                              "userId": 1,
-                            });
-                      });
-                },
-                child: Text(
-                  'Login',
-                  style: TextStyle(color: Colors.white, fontSize: 25),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 130,
-            ),
-            Text('New User? Create Account'),
-            SizedBox(
-              height: 10,
-            ),
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Connection status
             ZoNetworkAwareWidget(
               builder: (context, status) {
-                if (status == ConnectivityWatcherStatus.connected) {
-                  return Container(
-                    height: 50,
-                    width: 250,
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20)),
-                    child: MaterialButton(
-                      onPressed: () async {},
-                      child: Text(
-                        'Connected',
-                        style: TextStyle(color: Colors.black, fontSize: 25),
-                      ),
+                final isConnected =
+                    status == ConnectivityWatcherStatus.connected;
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: isConnected
+                        ? Colors.green.shade50
+                        : Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isConnected
+                          ? Colors.green.shade300
+                          : Colors.red.shade300,
                     ),
-                  );
-                } else {
-                  return Container(
-                    height: 50,
-                    width: 250,
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20)),
-                    child: MaterialButton(
-                      onPressed: () async {},
-                      child: Text(
-                        'Disconnected',
-                        style: TextStyle(color: Colors.black, fontSize: 25),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isConnected ? Icons.wifi : Icons.wifi_off,
+                        color: isConnected ? Colors.green : Colors.red,
                       ),
+                      const SizedBox(width: 12),
+                      Text(
+                        isConnected ? 'Connected' : 'Disconnected',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: isConnected
+                              ? Colors.green.shade800
+                              : Colors.red.shade800,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Last result
+            if (_lastResult.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
+                  ],
+                ),
+                child: Text(
+                  'Last: $_lastResult',
+                  style: TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: 14,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 24),
+
+            // Section: GET Requests
+            _buildSectionHeader('GET Requests', Icons.download),
+            const SizedBox(height: 8),
+            _buildRequestButton(
+              label: 'GET Single Post',
+              subtitle: '/posts/1',
+              color: Colors.blue,
+              icon: Icons.article,
+              onTap: () async {
+                try {
+                  final res = await _dio.get(
+                    "https://jsonplaceholder.typicode.com/posts/1",
                   );
+                  _showResult('GET', res);
+                } catch (e) {
+                  _showError('GET', e);
                 }
               },
             ),
+            const SizedBox(height: 8),
+            _buildRequestButton(
+              label: 'GET with Query Params',
+              subtitle: '/comments?postId=1',
+              color: Colors.blue.shade700,
+              icon: Icons.filter_list,
+              onTap: () async {
+                try {
+                  final res = await _dio.get(
+                    "https://jsonplaceholder.typicode.com/comments",
+                    queryParameters: {"postId": 1},
+                  );
+                  _showResult('GET (query)', res);
+                } catch (e) {
+                  _showError('GET (query)', e);
+                }
+              },
+            ),
+            const SizedBox(height: 8),
+            _buildRequestButton(
+              label: 'GET All Users',
+              subtitle: '/users',
+              color: Colors.blue.shade400,
+              icon: Icons.people,
+              onTap: () async {
+                try {
+                  final res = await _dio.get(
+                    "https://jsonplaceholder.typicode.com/users",
+                  );
+                  _showResult('GET Users', res);
+                } catch (e) {
+                  _showError('GET Users', e);
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // Section: POST Requests
+            _buildSectionHeader('POST Requests', Icons.upload),
+            const SizedBox(height: 8),
+            _buildRequestButton(
+              label: 'POST JSON Body',
+              subtitle: '/posts (create new)',
+              color: Colors.green,
+              icon: Icons.add_circle,
+              onTap: () async {
+                try {
+                  final res = await _dio.post(
+                    "https://jsonplaceholder.typicode.com/posts",
+                    data: {
+                      "title": "Network Inspector Test",
+                      "body": "Testing POST request",
+                      "userId": 1,
+                    },
+                  );
+                  _showResult('POST', res);
+                } catch (e) {
+                  _showError('POST', e);
+                }
+              },
+            ),
+            const SizedBox(height: 8),
+            _buildRequestButton(
+              label: 'POST FormData (Multipart)',
+              subtitle: 'httpbin.org/post',
+              color: Colors.green.shade700,
+              icon: Icons.attach_file,
+              onTap: () async {
+                try {
+                  final formData = FormData.fromMap({
+                    "name": "connectivity_watcher",
+                    "version": "3.0.6",
+                    "description": "Testing FormData upload",
+                  });
+                  final res = await _dio.post(
+                    "https://httpbin.org/post",
+                    data: formData,
+                  );
+                  _showResult('POST FormData', res);
+                } catch (e) {
+                  _showError('POST FormData', e);
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // Section: PUT / PATCH
+            _buildSectionHeader('PUT / PATCH Requests', Icons.edit),
+            const SizedBox(height: 8),
+            _buildRequestButton(
+              label: 'PUT Full Update',
+              subtitle: '/posts/1',
+              color: Colors.orange,
+              icon: Icons.sync,
+              onTap: () async {
+                try {
+                  final res = await _dio.put(
+                    "https://jsonplaceholder.typicode.com/posts/1",
+                    data: {
+                      "id": 1,
+                      "title": "Updated Title",
+                      "body": "Updated Body",
+                      "userId": 1,
+                    },
+                  );
+                  _showResult('PUT', res);
+                } catch (e) {
+                  _showError('PUT', e);
+                }
+              },
+            ),
+            const SizedBox(height: 8),
+            _buildRequestButton(
+              label: 'PATCH Partial Update',
+              subtitle: '/posts/1 (title only)',
+              color: Colors.orange.shade700,
+              icon: Icons.edit_note,
+              onTap: () async {
+                try {
+                  final res = await _dio.patch(
+                    "https://jsonplaceholder.typicode.com/posts/1",
+                    data: {"title": "Patched Title"},
+                  );
+                  _showResult('PATCH', res);
+                } catch (e) {
+                  _showError('PATCH', e);
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // Section: DELETE
+            _buildSectionHeader('DELETE Request', Icons.delete_outline),
+            const SizedBox(height: 8),
+            _buildRequestButton(
+              label: 'DELETE Post',
+              subtitle: '/posts/1',
+              color: Colors.red,
+              icon: Icons.delete,
+              onTap: () async {
+                try {
+                  final res = await _dio.delete(
+                    "https://jsonplaceholder.typicode.com/posts/1",
+                  );
+                  _showResult('DELETE', res);
+                } catch (e) {
+                  _showError('DELETE', e);
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // Section: Error
+            _buildSectionHeader('Error Scenarios', Icons.error_outline),
+            const SizedBox(height: 8),
+            _buildRequestButton(
+              label: 'GET 404 Not Found',
+              subtitle: '/posts/99999',
+              color: Colors.grey.shade700,
+              icon: Icons.broken_image,
+              onTap: () async {
+                try {
+                  final res = await _dio.get(
+                    "https://jsonplaceholder.typicode.com/posts/99999",
+                  );
+                  _showResult('GET 404', res);
+                } catch (e) {
+                  _showError('GET 404', e);
+                }
+              },
+            ),
+            const SizedBox(height: 8),
+            _buildRequestButton(
+              label: 'GET Invalid URL',
+              subtitle: 'https://invalid.url.test/',
+              color: Colors.grey.shade600,
+              icon: Icons.link_off,
+              onTap: () async {
+                try {
+                  final res = await _dio.get("https://invalid.url.test/");
+                  _showResult('GET Invalid', res);
+                } catch (e) {
+                  _showError('GET Invalid', e);
+                }
+              },
+            ),
+            const SizedBox(height: 24),
+
+            // View Network Logs
+            SizedBox(
+              height: 56,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1E1E2C),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  elevation: 2,
+                ),
+                icon: const Icon(Icons.monitor_heart),
+                label: const Text(
+                  'View Network Logs',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                onPressed: () {
+                  ZoConnectivityWatcher().showNetworkLogsScreen(context);
+                },
+              ),
+            ),
+            const SizedBox(height: 32),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Colors.grey.shade600),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade800,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRequestButton({
+    required String label,
+    required String subtitle,
+    required Color color,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      elevation: 1,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 22),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, color: Colors.grey.shade400),
+            ],
+          ),
         ),
       ),
     );
@@ -225,8 +529,10 @@ class _LoginDemoState extends State<LoginDemo> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
-
     super.dispose();
   }
 }
+
+
+
+

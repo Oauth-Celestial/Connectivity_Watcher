@@ -4,6 +4,10 @@ import 'package:connectivity_watcher/controller/zo_connectivity_controller.dart'
 import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:connectivity_watcher/core/manager/zo_retry_manager.dart';
 import 'package:connectivity_watcher/core/interceptors/connectivity_retry_interceptor.dart';
+import 'package:connectivity_watcher/core/interceptors/network_logger_interceptor.dart';
+import 'package:connectivity_watcher/core/manager/zo_network_log_manager.dart';
+import 'package:connectivity_watcher/core/models/network_log_model.dart';
+import 'package:connectivity_watcher/screens/network_logs_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -40,6 +44,24 @@ class ZoConnectivityWatcher {
   /// when the internet connection is restored.
   void setupDio(Dio dio) {
     dio.interceptors.add(ConnectivityRetryInterceptor(dio: dio));
+  }
+
+  /// Set up a Dio client to automatically log network requests for the Network Inspector.
+  void setupDioLogger(Dio dio) {
+    dio.interceptors.add(NetworkLoggerInterceptor());
+  }
+
+  /// Get all the stored network logs.
+  List<NetworkLogModel> getNetworkLogs() {
+    return ZoNetworkLogManager.instance.logs;
+  }
+
+  /// Open the Network Logs Inspector screen.
+  void showNetworkLogsScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ZoNetworkLogsScreen()),
+    );
   }
 
   void updateStream(ConnectivityWatcherStatus status) {
