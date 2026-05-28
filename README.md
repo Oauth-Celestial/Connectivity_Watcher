@@ -1,4 +1,4 @@
-<img width="382" height="850" alt="WhatsAppVideo2026-05-28at2 49 00PM-ezgif com-optimize" src="https://github.com/user-attachments/assets/8756300e-e8eb-495e-9356-eba6e0a71aca" />
+
 
 # connectivity_watcher
 
@@ -8,9 +8,9 @@
 
 **A lightning-fast Flutter plugin for true internet connectivity monitoring.** Most connectivity packages only check if the device's Wi-Fi or Mobile radio is "on." **ZoConnectivityWatcher** goes further by implementing a real-time **Heartbeat Strategy** (inspired by high-performance games like *Clash of Clans* and *PUBG*). It ensures your app knows when the internet is *actually* reachable, detecting "Liar Wi-Fi" (connected to a router but no data flow) in sub-second time.
 
-| **Custom UI** | **SnackBar Style** | **Alert Dialog** |
-|:-------------:|:------------------:|:----------------:|
-| ![Custom](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/b72c6bcc-d782-4bbf-93fe-a7b63f8ea818) | ![SnackBar](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/af375c80-1942-4410-b7ff-cf167c131f7f) | ![Alert](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/7b50b018-d863-44e9-afb3-d627cdafd9a2) |
+<img width="382" height="650" alt="network" src="https://github.com/user-attachments/assets/f04e2307-c78d-4c53-94fa-013a2f451e85" />
+
+
 
 ---
 
@@ -57,6 +57,9 @@ ZoConnectivityWatcher().setUp(
 ```
 
 ## 🔌 Basic Usage
+| **Custom UI** | **SnackBar Style** | **Alert Dialog** |
+|:-------------:|:------------------:|:----------------:|
+| ![Custom](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/b72c6bcc-d782-4bbf-93fe-a7b63f8ea818) | ![SnackBar](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/af375c80-1942-4410-b7ff-cf167c131f7f) | ![Alert](https://github.com/Oauth-Celestial/Connectivity_Watcher/assets/119127289/7b50b018-d863-44e9-afb3-d627cdafd9a2) |
 
 ### Wrap Your App
 
@@ -188,12 +191,10 @@ Log API requests as curl commands in your console:
 final dio = Dio();
 dio.interceptors.add(CurlInterceptor());
 ```
-<img width="382" height="850" alt="network" src="https://github.com/user-attachments/assets/f04e2307-c78d-4c53-94fa-013a2f451e85" />
-
-
 ---
 
-## 🔎 In-App Network Inspector (New!)
+## 🔎 In-App Network Inspector (Beta)
+
 
 Monitor all HTTP traffic directly inside your app, similar to the Chrome Network Tab. You can view status codes, request/response bodies, headers, and easily copy cURL commands.
 
@@ -225,7 +226,7 @@ ZoNetworkLogManager.instance.clearLogs();
 
 ---
 
-## 🎮 Gaming-Style Ping System (New!)
+##  Ping System 
 
 Measure the exact round-trip latency to a server in real-time and display it in your app, similar to AAA gaming titles (e.g., PUBG, Valorant). It uses a lightweight background TCP socket connection to measure latency without blocking the UI.
 
@@ -252,8 +253,7 @@ AppBar(
     ZoPingWidget(
       goodPingThreshold: 100,
       mediumPingThreshold: 200,
-      // You can also use a custom builder to completely style it yourself!
-    ),
+    
   ],
 )
 ```
@@ -268,8 +268,9 @@ Have an idea or found a bug? Open an issue on [GitHub](https://github.com/Oauth-
 
 ## 📦 More From Me
 
-- [zo_micro_interactions](https://pub.dev/packages/zo_micro_interactions): A curated set of high-quality Flutter micro-interactions designed for modern, polished apps.
 - [zo_animated_border](https://pub.dev/packages/zo_animated_border): Modern gradient border animations.
+- [zo_app_blocker](https://pub.dev/packages/zo_app_blocker): A Flutter plugin to block specific applications on Android.
+- [zo_micro_interactions](https://pub.dev/packages/zo_micro_interactions): A curated set of high-quality Flutter micro-interactions designed for modern, polished apps.
 - [zo_screenshot](https://pub.dev/packages/zo_screenshot): Prevent screenshots and record secure areas.
 - [theme_manager_plus](https://pub.dev/packages/theme_manager_plus): Manage Flutter themes with custom classes.
 - [ultimate_extension](https://pub.dev/packages/ultimate_extension): Powerful utilities for Dart collections.

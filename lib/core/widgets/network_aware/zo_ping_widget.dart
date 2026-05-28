@@ -2,7 +2,7 @@ import 'package:connectivity_watcher/core/service/zo_ping_service.dart';
 import 'package:flutter/material.dart';
 
 /// A customizable widget that displays the real-time ping latency in milliseconds,
-/// similar to AAA gaming titles like PUBG.
+
 class ZoPingWidget extends StatelessWidget {
   /// Custom text style for the ping text.
   final TextStyle? textStyle;
@@ -17,7 +17,7 @@ class ZoPingWidget extends StatelessWidget {
   /// Threshold for green color (default: 100)
   final int goodPingThreshold;
 
-  /// Threshold for orange/yellow color (default: 200). 
+  /// Threshold for orange/yellow color (default: 200).
   /// Anything above this will be red.
   final int mediumPingThreshold;
 
@@ -77,7 +77,8 @@ class ZoPingWidget extends StatelessWidget {
             Text(
               pingText,
               style: textStyle?.copyWith(color: color) ??
-                  TextStyle(color: color, fontSize: 14, fontWeight: FontWeight.bold),
+                  TextStyle(
+                      color: color, fontSize: 14, fontWeight: FontWeight.bold),
             ),
           ],
         );

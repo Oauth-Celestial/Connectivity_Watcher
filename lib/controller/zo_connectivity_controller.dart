@@ -3,7 +3,7 @@ import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_service.dart';
 import 'package:connectivity_watcher/core/widgets/dialogue/native_alert.dart';
 import 'package:connectivity_watcher/screens/custom_no_internet.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 
 class ZoConnectivityController {
@@ -268,7 +268,7 @@ class ZoConnectivityController {
     return isconnected;
   }
 
-  showPlatformAlert() {
+  void showPlatformAlert() {
     currentContext = _contextKey.currentContext;
     if (currentContext != null) {
       isAlertActive = true;
