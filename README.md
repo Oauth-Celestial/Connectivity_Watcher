@@ -1,3 +1,4 @@
+<img width="382" height="850" alt="WhatsAppVideo2026-05-28at2 49 00PM-ezgif com-optimize" src="https://github.com/user-attachments/assets/8756300e-e8eb-495e-9356-eba6e0a71aca" />
 
 # connectivity_watcher
 
@@ -187,6 +188,8 @@ Log API requests as curl commands in your console:
 final dio = Dio();
 dio.interceptors.add(CurlInterceptor());
 ```
+<img width="382" height="850" alt="network" src="https://github.com/user-attachments/assets/f04e2307-c78d-4c53-94fa-013a2f451e85" />
+
 
 ---
 
