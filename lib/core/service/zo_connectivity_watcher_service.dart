@@ -1,13 +1,12 @@
 import 'dart:async';
 
 import 'package:connectivity_watcher/controller/zo_connectivity_controller.dart';
-import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:connectivity_watcher/core/manager/zo_retry_manager.dart';
-import 'package:connectivity_watcher/core/interceptors/connectivity_retry_interceptor.dart';
+
 import 'package:connectivity_watcher/core/interceptors/network_logger_interceptor.dart';
 import 'package:connectivity_watcher/core/manager/zo_network_log_manager.dart';
 import 'package:connectivity_watcher/core/models/network_log_model.dart';
-import 'package:connectivity_watcher/core/service/zo_ping_service.dart';
+
 import 'package:connectivity_watcher/screens/network_logs_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -33,22 +32,17 @@ class ZoConnectivityWatcher {
   Stream<ConnectivityWatcherStatus> get stream =>
       _connectivityController.stream;
 
-  void setNavigatorKey(GlobalKey<NavigatorState> key) {
+  setNavigatorKey(GlobalKey<NavigatorState> key) {
     _navigationKey = key;
   }
 
-  void setUp({StealthInternetChecker? internetChecker}) {
-    ZoConnectivityController().setUp(internetChecker: internetChecker);
+  setUp({ Duration? checkInterval,
+   Duration? timeout}) {
+    ZoConnectivityController().setUp(checkInterval:checkInterval,timeout: timeout );
   }
 
-  /// Set up a Dio client to automatically track and retry failed network requests
-  /// when the internet connection is restored.
-  void setupDio(Dio dio) {
-    dio.interceptors.add(ConnectivityRetryInterceptor(dio: dio));
-  }
 
-  /// Set up a Dio client to automatically log network requests for the Network Inspector.
-  void setupDioLogger(Dio dio) {
+void setupDioLogger(Dio dio) {
     dio.interceptors.add(NetworkLoggerInterceptor());
   }
 
@@ -64,24 +58,7 @@ class ZoConnectivityWatcher {
       MaterialPageRoute(builder: (context) => const ZoNetworkLogsScreen()),
     );
   }
-
-  /// Initializes the real-time ping monitoring system.
-  /// If parameters are null, defaults to pinging Google DNS (8.8.8.8) every 2 seconds.
-  void initPingService({
-    String? targetIp,
-    int? targetPort,
-    Duration? interval,
-    Duration? timeout,
-  }) {
-    ZoPingService.instance.init(
-      targetIp: targetIp,
-      targetPort: targetPort,
-      interval: interval,
-      timeout: timeout,
-    );
-  }
-
-  void updateStream(ConnectivityWatcherStatus status) {
+  updateStream(ConnectivityWatcherStatus status) {
     _connectivityController.sink.add(status);
   }
 

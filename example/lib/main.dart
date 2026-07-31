@@ -9,14 +9,8 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
   ZoConnectivityWatcher().setUp(
-    internetChecker: StealthInternetChecker(
-      heartbeatUrl: "https://www.google.com/",
-    ),
-  );
-
-  // Initialize the ping system (defaults to pinging 8.8.8.8)
-  ZoConnectivityWatcher().initPingService();
-
+   checkInterval: Duration(seconds: 5)
+      );
   runApp(MyApp());
 }
 
