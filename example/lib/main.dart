@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
+
   ZoConnectivityWatcher().setUp(
-   checkInterval: Duration(seconds: 5)
+  
+   checkInterval: Duration(seconds: 1)
       );
   runApp(MyApp());
 }

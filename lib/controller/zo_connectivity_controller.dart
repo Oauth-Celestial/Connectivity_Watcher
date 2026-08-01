@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_service.dart';
 import 'package:connectivity_watcher/core/widgets/dialogue/native_alert.dart';

@@ -39,22 +39,11 @@ Initialize the watcher in your main.dart. By default, it uses DNS socket checks 
 
 ```dart
 WidgetsFlutterBinding.ensureInitialized();
-ZoConnectivityWatcher().setUp();
-```
-
-**Advanced: Custom Heartbeat & Timing**
-
-If you want to use your own website as the source of truth (highly recommended to bypass DNS blocks), pass a StealthInternetChecker instance to the setUp method.
-
-```dart
 ZoConnectivityWatcher().setUp(
-  internetChecker: StealthInternetChecker(
-    heartbeatUrl: "https://your-website.com", 
-    checkInterval: Duration(seconds: 10),    
-    timeout: Duration(seconds: 5),           
-  ),
-);
+  checkInterval: Duration(seconds: 1)
+  );
 ```
+
 
 ## 🔌 Basic Usage
 | **Custom UI** | **SnackBar Style** | **Alert Dialog** |

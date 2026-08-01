@@ -1,4 +1,11 @@
-## Release
+
+# Release
+
+## 3.1.1
+
+* Removed heartbeaturl due to ip visiblity of custom url.
+* Added custom timeout and checkIntervalTime.
+* Fixed Multiple Overlay Bug when internet is weak.
 
 ## 3.1.0
 
