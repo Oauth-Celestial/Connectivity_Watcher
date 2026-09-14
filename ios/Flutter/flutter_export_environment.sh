@@ -1,13 +1,12 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Users/ravi/Documents/flutter"
+export "FLUTTER_ROOT=/Users/ravi/fvm/versions/3.41.3"
 export "FLUTTER_APPLICATION_PATH=/Users/ravi/Desktop/Projects/Packages/Connectivity_Watcher"
-export "FLUTTER_FRAMEWORK_SWIFT_PACKAGE_PATH=/Users/ravi/Desktop/Projects/Packages/Connectivity_Watcher/ios/Flutter/ephemeral/Packages/.packages/FlutterFramework"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"
-export "FLUTTER_BUILD_NAME=3.0.6"
-export "FLUTTER_BUILD_NUMBER=3.0.6"
+export "FLUTTER_BUILD_NAME=3.2.0"
+export "FLUTTER_BUILD_NUMBER=3.2.0"
 export "DART_OBFUSCATION=false"
 export "TRACK_WIDGET_CREATION=true"
 export "TREE_SHAKE_ICONS=false"

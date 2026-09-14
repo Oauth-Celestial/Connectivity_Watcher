@@ -1,6 +1,16 @@
 
 # Release
 
+## 3.2.0
+
+* Added `ConnectionMode` parameter to identify internet connection type (Wi-Fi, Mobile Data, Ethernet, VPN, etc.).
+* Added `connectionModeStream` and unified `eventStream`.
+* Updated `ZoNetworkAwareWidget` to support connection mode in builder.
+* Switched background checks and pings to InternetAddress lookups to prevent DevTools flooding.
+* Fixed initial offline screen flash on app launch.
+* Fixed stuck overlay dismissal bug in `_removeNoInternet`.
+
+
 ## 3.1.1
 
 * Removed heartbeaturl due to ip visiblity of custom url.

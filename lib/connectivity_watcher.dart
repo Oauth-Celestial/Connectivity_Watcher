@@ -1,6 +1,6 @@
 library connectivity_watcher;
 
-export 'screens/zo_connectivity_watcher_warpper.dart';
+export 'screens/zo_connectivity_watcher_wrapper.dart';
 export 'screens/custom_no_internet.dart';
 export 'core/service/zo_connectivity_watcher_service.dart';
 export 'core/interceptors/curl_interceptor.dart';

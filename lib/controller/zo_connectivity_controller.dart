@@ -1,10 +1,20 @@
 import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_service.dart';
 import 'package:connectivity_watcher/core/widgets/dialogue/native_alert.dart';
 import 'package:connectivity_watcher/screens/custom_no_internet.dart';
-
 import 'package:flutter/material.dart';
+
+class ConnectionResolution {
+  final ConnectionMode primary;
+  final List<ConnectionMode> active;
+
+  const ConnectionResolution({
+    required this.primary,
+    required this.active,
+  });
+}
 
 class ZoConnectivityController {
   GlobalKey<NavigatorState> _contextKey = GlobalKey<NavigatorState>();
@@ -34,38 +44,206 @@ class ZoConnectivityController {
     return _instance;
   }
 
-  StreamSubscription<bool>? _subscription;
-
+  final Connectivity _connectivity = Connectivity();
   final StealthInternetChecker _stealthInternetChecker =
       StealthInternetChecker();
+  final Debouncer _debouncer = Debouncer(delay: const Duration(seconds: 1));
 
-  final Debouncer _debouncer = Debouncer(delay: Duration(seconds: 1));
+  StreamSubscription<List<ConnectivityResult>>? _hardwareSubscription;
+  StreamSubscription<bool>? _probeSubscription;
+  StreamSubscription<bool>? _uiListenerSubscription;
 
-  Future<void> setUp({ Duration? checkInterval,
-   Duration? timeout}) async {
-  
+  ConnectionMode _currentMode = ConnectionMode.wifi;
+  List<ConnectionMode> _activeModes = [ConnectionMode.wifi];
+  bool _isInitialCheck = true;
 
-    if(timeout!= null){
+  ConnectionMode get currentMode => _currentMode;
+  List<ConnectionMode> get activeModes => List.unmodifiable(_activeModes);
+
+  static ConnectionMode mapResult(ConnectivityResult result) {
+    switch (result) {
+      case ConnectivityResult.wifi:
+        return ConnectionMode.wifi;
+      case ConnectivityResult.mobile:
+        return ConnectionMode.mobile;
+      case ConnectivityResult.ethernet:
+        return ConnectionMode.ethernet;
+      case ConnectivityResult.bluetooth:
+        return ConnectionMode.bluetooth;
+      case ConnectivityResult.vpn:
+        return ConnectionMode.vpn;
+      case ConnectivityResult.other:
+        return ConnectionMode.other;
+      case ConnectivityResult.none:
+        return ConnectionMode.none;
+      default:
+        if (result.name.toLowerCase() == 'satellite') {
+          return ConnectionMode.satellite;
+        }
+        return ConnectionMode.other;
+    }
+  }
+
+  static ConnectionResolution resolveModes(List<ConnectivityResult> results) {
+    if (results.isEmpty ||
+        (results.length == 1 && results.first == ConnectivityResult.none)) {
+      return const ConnectionResolution(
+        primary: ConnectionMode.none,
+        active: [ConnectionMode.none],
+      );
+    }
+
+    final activeModes = results
+        .where((r) => r != ConnectivityResult.none)
+        .map(mapResult)
+        .toSet()
+        .toList();
+
+    if (activeModes.isEmpty) {
+      return const ConnectionResolution(
+        primary: ConnectionMode.none,
+        active: [ConnectionMode.none],
+      );
+    }
+
+    ConnectionMode primary;
+    if (activeModes.contains(ConnectionMode.ethernet)) {
+      primary = ConnectionMode.ethernet;
+    } else if (activeModes.contains(ConnectionMode.wifi)) {
+      primary = ConnectionMode.wifi;
+    } else if (activeModes.contains(ConnectionMode.mobile)) {
+      primary = ConnectionMode.mobile;
+    } else if (activeModes.contains(ConnectionMode.vpn)) {
+      primary = ConnectionMode.vpn;
+    } else if (activeModes.contains(ConnectionMode.bluetooth)) {
+      primary = ConnectionMode.bluetooth;
+    } else {
+      primary = activeModes.first;
+    }
+
+    return ConnectionResolution(primary: primary, active: activeModes);
+  }
+
+  Future<void> setUp({Duration? checkInterval, Duration? timeout}) async {
+    if (timeout != null) {
       _stealthInternetChecker.timeout = timeout;
     }
-    if(checkInterval!= null){
-       _stealthInternetChecker.checkInterval = checkInterval;
+    if (checkInterval != null) {
+      _stealthInternetChecker.checkInterval = checkInterval;
     }
-    _subscription = _stealthInternetChecker.onStatusChange.listen((status) {
-      _debouncer(() {
-        _statusController.add(status);
 
-        if (status) {
-          ZoConnectivityWatcher().isInternetAvailable = true;
-          ZoConnectivityWatcher()
-              .updateStream(ConnectivityWatcherStatus.connected);
-        } else {
-          ZoConnectivityWatcher().isInternetAvailable = false;
-          ZoConnectivityWatcher()
-              .updateStream(ConnectivityWatcherStatus.disconnected);
+    // Cancel any existing subscriptions to prevent duplicate event delivery
+    await _hardwareSubscription?.cancel();
+    await _probeSubscription?.cancel();
+
+    // 1. Initial Hardware & Reachability Check
+    try {
+      final initialResults = await _connectivity.checkConnectivity();
+      final resolution = resolveModes(initialResults);
+      _currentMode = resolution.primary;
+      _activeModes = resolution.active;
+
+      bool hasInternet = false;
+      if (_currentMode != ConnectionMode.none) {
+        hasInternet = await _stealthInternetChecker.getCurrentStatus();
+      } else {
+        // Double check in case platform channel returns none prematurely during app startup
+        hasInternet = await _stealthInternetChecker.getCurrentStatus();
+        if (hasInternet) {
+          _currentMode = ConnectionMode.wifi;
+          _activeModes = [ConnectionMode.wifi];
         }
-      });
+      }
+
+      _isInitialCheck = false;
+
+      if (hasInternet) {
+        _stealthInternetChecker.notifyOnline();
+        _statusController.add(true);
+        ZoConnectivityWatcher().updateStatusAndMode(
+          status: ConnectivityWatcherStatus.connected,
+          mode: _currentMode,
+          activeModes: _activeModes,
+        );
+      } else {
+        _stealthInternetChecker.notifyOffline();
+        _statusController.add(false);
+        ZoConnectivityWatcher().updateStatusAndMode(
+          status: ConnectivityWatcherStatus.disconnected,
+          mode: _currentMode,
+          activeModes: _activeModes,
+        );
+      }
+    } catch (e) {
+      _isInitialCheck = false;
+      debugPrint('ZoConnectivityController: hardware check error: $e');
+    }
+
+    // 2. Hardware Change Stream (Airplane mode, Wi-Fi on/off, Cellular handover)
+    _hardwareSubscription =
+        _connectivity.onConnectivityChanged.listen((results) {
+      _handleHardwareChange(results);
     });
+
+    // 3. Active Probe Stream (internet reachability)
+    _probeSubscription =
+        _stealthInternetChecker.onStatusChange.listen((hasInternet) {
+      void applyStatus() {
+        _statusController.add(hasInternet);
+        final status = hasInternet
+            ? ConnectivityWatcherStatus.connected
+            : ConnectivityWatcherStatus.disconnected;
+
+        ZoConnectivityWatcher().updateStatusAndMode(
+          status: status,
+          mode: _currentMode,
+          activeModes: _activeModes,
+        );
+      }
+
+      if (_isInitialCheck) {
+        _isInitialCheck = false;
+        applyStatus();
+      } else {
+        _debouncer(applyStatus);
+      }
+    });
+  }
+
+  void _handleHardwareChange(List<ConnectivityResult> results) {
+    if (_isInitialCheck) return;
+
+    final resolution = resolveModes(results);
+    final previousMode = _currentMode;
+    _currentMode = resolution.primary;
+    _activeModes = resolution.active;
+
+    if (_currentMode == ConnectionMode.none) {
+      // Hardware disconnected: instant 0ms offline transition
+      _stealthInternetChecker.notifyOffline();
+      _statusController.add(false);
+      ZoConnectivityWatcher().updateStatusAndMode(
+        status: ConnectivityWatcherStatus.disconnected,
+        mode: ConnectionMode.none,
+        activeModes: [ConnectionMode.none],
+      );
+    } else {
+      // Hardware active: update mode immediately and trigger probe to verify internet reachability
+      if (previousMode != _currentMode) {
+        ZoConnectivityWatcher().updateStatusAndMode(
+          status: ZoConnectivityWatcher().isInternetAvailable
+              ? ConnectivityWatcherStatus.connected
+              : ConnectivityWatcherStatus.disconnected,
+          mode: _currentMode,
+          activeModes: _activeModes,
+        );
+      }
+      _stealthInternetChecker.triggerCheck();
+    }
+  }
+
+  void notifyOnline() {
+    _stealthInternetChecker.notifyOnline();
   }
 
   Future<void> setupConnectivityListner({
@@ -74,8 +252,8 @@ class ZoConnectivityController {
     NoConnectivityStyle? connectivityStyle = NoConnectivityStyle.SNACKBAR,
     Widget? customAlert,
   }) async {
-    if (_subscription == null) {
-      setUp();
+    if (_hardwareSubscription == null || _probeSubscription == null) {
+      await setUp();
     }
 
     if (connectivityStyle != NoConnectivityStyle.NONE) {
@@ -97,7 +275,9 @@ class ZoConnectivityController {
       }
     }
 
-    _statusController.stream.listen((status) {
+    // Cancel existing UI listener to prevent duplicate handlers
+    await _uiListenerSubscription?.cancel();
+    _uiListenerSubscription = _statusController.stream.listen((status) {
       if (_connectivityStyle == NoConnectivityStyle.CUSTOM &&
           _contextKey.currentState?.overlay != null) {
         _overlayState = _contextKey.currentState!.overlay;
@@ -168,11 +348,6 @@ class ZoConnectivityController {
   }
 
   Future<bool> _removeNoInternet() async {
-    final isNetworkBack = await getConnectivityStatus();
-    if (!isNetworkBack) {
-      return false;
-    }
-
     ZoConnectivityWatcher().isInternetAvailable = true;
     ZoConnectivityWatcher().isNoInternetWidgetVisible = false;
 
@@ -210,6 +385,10 @@ class ZoConnectivityController {
   }
 
   void showNoInternet() {
+    if (_isInitialCheck) {
+      return;
+    }
+
     if (ZoConnectivityWatcher().isNoInternetWidgetVisible) {
       return;
     }
@@ -251,7 +430,23 @@ class ZoConnectivityController {
   }
 
   Future<bool> getConnectivityStatus() async {
+    if (_currentMode == ConnectionMode.none) {
+      return false;
+    }
     return await _stealthInternetChecker.getCurrentStatus();
+  }
+
+  /// Directly queries the network hardware interfaces and returns the active [ConnectionMode].
+  Future<ConnectionMode> getConnectionMode() async {
+    try {
+      final results = await _connectivity.checkConnectivity();
+      final resolution = resolveModes(results);
+      _currentMode = resolution.primary;
+      _activeModes = resolution.active;
+      return _currentMode;
+    } catch (_) {
+      return _currentMode;
+    }
   }
 
   void showPlatformAlert() {

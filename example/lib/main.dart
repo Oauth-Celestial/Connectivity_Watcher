@@ -1,5 +1,4 @@
 import 'package:connectivity_watcher/connectivity_watcher.dart';
-import 'package:connectivity_watcher/core/manager/socket_internet_checker.dart';
 import 'package:dio/dio.dart';
 
 import 'package:example/no_internet.dart';
@@ -10,7 +9,6 @@ void main() {
   
 
   ZoConnectivityWatcher().setUp(
-  
    checkInterval: Duration(seconds: 1)
       );
   runApp(MyApp());
@@ -155,11 +153,39 @@ class _ApiTestDashboardState extends State<ApiTestDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Connection status
+            // Connection status and mode
             ZoNetworkAwareWidget(
-              builder: (context, status) {
+              builder: (context, status, ConnectionMode mode) {
                 final isConnected =
                     status == ConnectivityWatcherStatus.connected;
+                IconData modeIcon;
+                switch (mode) {
+                  case ConnectionMode.wifi:
+                    modeIcon = Icons.wifi;
+                    break;
+                  case ConnectionMode.mobile:
+                    modeIcon = Icons.signal_cellular_alt;
+                    break;
+                  case ConnectionMode.ethernet:
+                    modeIcon = Icons.settings_ethernet;
+                    break;
+                  case ConnectionMode.vpn:
+                    modeIcon = Icons.vpn_lock;
+                    break;
+                  case ConnectionMode.bluetooth:
+                    modeIcon = Icons.bluetooth;
+                    break;
+                  case ConnectionMode.satellite:
+                    modeIcon = Icons.satellite_alt;
+                    break;
+                  case ConnectionMode.other:
+                    modeIcon = Icons.devices_other;
+                    break;
+                  case ConnectionMode.none:
+                    modeIcon = Icons.wifi_off;
+                    break;
+                }
+
                 return Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -177,18 +203,55 @@ class _ApiTestDashboardState extends State<ApiTestDashboard> {
                   child: Row(
                     children: [
                       Icon(
-                        isConnected ? Icons.wifi : Icons.wifi_off,
+                        isConnected ? modeIcon : Icons.wifi_off,
                         color: isConnected ? Colors.green : Colors.red,
+                        size: 28,
                       ),
                       const SizedBox(width: 12),
-                      Text(
-                        isConnected ? 'Connected' : 'Disconnected',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isConnected ? 'Online' : 'Offline',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: isConnected
+                                    ? Colors.green.shade800
+                                    : Colors.red.shade800,
+                              ),
+                            ),
+                            Text(
+                              'Connection Mode: ${mode.label}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isConnected
+                                    ? Colors.green.shade700
+                                    : Colors.red.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
                           color: isConnected
-                              ? Colors.green.shade800
-                              : Colors.red.shade800,
+                              ? Colors.green.shade100
+                              : Colors.red.shade100,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          mode.label,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: isConnected
+                                ? Colors.green.shade900
+                                : Colors.red.shade900,
+                          ),
                         ),
                       ),
                     ],

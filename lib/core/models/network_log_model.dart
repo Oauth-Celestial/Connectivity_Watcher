@@ -1,3 +1,4 @@
+import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_service.dart';
 import 'package:dio/dio.dart';
 
 enum NetworkLogStatus { pending, success, error }
@@ -9,6 +10,7 @@ class NetworkLogModel {
   final Map<String, dynamic> requestHeaders;
   final dynamic requestBody;
   final DateTime startTime;
+  final ConnectionMode? connectionMode;
 
   NetworkLogStatus status;
   int? statusCode;
@@ -29,5 +31,6 @@ class NetworkLogModel {
     required this.requestOptions,
     this.status = NetworkLogStatus.pending,
     this.curlCommand,
+    this.connectionMode,
   });
 }

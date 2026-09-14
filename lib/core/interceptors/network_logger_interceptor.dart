@@ -1,6 +1,7 @@
 import 'package:connectivity_watcher/core/interceptors/curl_interceptor.dart';
 import 'package:connectivity_watcher/core/manager/zo_network_log_manager.dart';
 import 'package:connectivity_watcher/core/models/network_log_model.dart';
+import 'package:connectivity_watcher/core/service/zo_connectivity_watcher_service.dart';
 import 'package:dio/dio.dart';
 
 class NetworkLoggerInterceptor extends Interceptor {
@@ -22,6 +23,7 @@ class NetworkLoggerInterceptor extends Interceptor {
       startTime: _startTimes[id]!,
       requestOptions: options,
       curlCommand: options.toCURL(),
+      connectionMode: ZoConnectivityWatcher().connectionMode,
     );
 
     ZoNetworkLogManager.instance.addLog(log);
@@ -31,6 +33,12 @@ class NetworkLoggerInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     _handleCompletion(response.requestOptions, response: response);
+    // Optimistically notify that internet is working on successful HTTP responses
+    if (response.statusCode != null &&
+        response.statusCode! >= 200 &&
+        response.statusCode! < 400) {
+      ZoConnectivityWatcher().notifyOnline();
+    }
     super.onResponse(response, handler);
   }
 
@@ -40,12 +48,14 @@ class NetworkLoggerInterceptor extends Interceptor {
     super.onError(err, handler);
   }
 
-  void _handleCompletion(RequestOptions options, {Response? response, DioException? err}) {
+  void _handleCompletion(RequestOptions options,
+      {Response? response, DioException? err}) {
     final id = options.extra['network_log_id'] as String?;
     if (id == null) return;
 
     final startTime = _startTimes.remove(id);
-    final duration = startTime != null ? DateTime.now().difference(startTime) : null;
+    final duration =
+        startTime != null ? DateTime.now().difference(startTime) : null;
 
     final logs = ZoNetworkLogManager.instance.logs;
     final logIndex = logs.indexWhere((l) => l.id == id);

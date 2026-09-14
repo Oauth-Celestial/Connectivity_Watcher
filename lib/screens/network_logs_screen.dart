@@ -65,7 +65,7 @@ class ZoNetworkLogsScreen extends StatelessWidget {
                   style: const TextStyle(fontSize: 13),
                 ),
                 subtitle: Text(
-                  '${log.startTime.hour}:${log.startTime.minute}:${log.startTime.second}  •  ${log.duration?.inMilliseconds ?? '...'} ms',
+                  '${log.startTime.hour}:${log.startTime.minute}:${log.startTime.second}  •  ${log.duration?.inMilliseconds ?? '...'} ms${log.connectionMode != null ? '  •  ${log.connectionMode!.label}' : ''}',
                   style: const TextStyle(fontSize: 12),
                 ),
                 onTap: () {
@@ -118,6 +118,8 @@ class ZoNetworkLogDetailsScreen extends StatelessWidget {
           children: [
             _buildSection('URL', log.url),
             _buildSection('Method', log.method),
+            if (log.connectionMode != null)
+              _buildSection('Connection Mode', log.connectionMode!.label),
             _buildSection(
                 'Status Code', log.statusCode?.toString() ?? 'Pending'),
             _buildSection(
